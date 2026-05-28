@@ -1,4 +1,4 @@
-<script>
+﻿<script>
 	import { goto } from '$app/navigation';
 	import { clearAuth } from '$lib/stores/auth.js';
 	import Swal from 'sweetalert2';
@@ -61,13 +61,7 @@
 					<a class="nav-link admin-nav-link" href="/admin/mascotas">
 						<i class="bi bi-dog"></i> Mascotas
 					</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link admin-nav-link" href="/admin/rastreadores">
-						<i class="bi bi-broadcast-pin"></i> Rastreadores
-					</a>
-				</li>
-				<li class="nav-item">
+				</li><li class="nav-item">
 					<a class="nav-link admin-nav-link" href="/admin/adopcion">
 						<i class="bi bi-heart-fill"></i> Adopción
 					</a>
@@ -104,13 +98,7 @@
 							<a class="dropdown-item cartoon-dropdown-item py-2" href="/usuarios/publicar">
 								<i class="bi bi-plus-circle me-2"></i> Publicar Mascota
 							</a>
-						</li>
-						<li>
-							<a class="dropdown-item cartoon-dropdown-item py-2" href="/usuarios/rastreador">
-								<i class="bi bi-geo-alt me-2"></i> Rastreador
-							</a>
-						</li>
-					</ul>
+						</li></ul>
 				</div>
 				<button class="btn btn-logout-admin shadow-sm" on:click={logout}>
 					<i class="bi bi-box-arrow-right"></i>
@@ -240,3 +228,4 @@
 		box-shadow: 3px 3px 0 var(--ink) !important;
 	}
 </style>
+

@@ -1,6 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import Navbar from '$lib/components/Navbar.svelte';
+	import { goto } from '$app/navigation';
 	import { formatAge } from '$lib/utils/formatAge.js';
 
 	export let data;
@@ -9,7 +10,7 @@
 	let loading = !pet;
 	let cedulaFile = null;
 	let reciboFile = null;
-	let quiere_tracker = false;
+
 	let acceptedTerms = false;
 	let message = '';
 	let success = false;
@@ -18,10 +19,27 @@
 
 	const API = 'http://localhost:8000';
 
-	onMount(() => {
+	onMount(async () => {
 		if (!pet) {
+			// Intentar obtener del localStorage primero
 			const stored = localStorage.getItem('selectedPet');
-			if (stored) pet = JSON.parse(stored);
+			if (stored) {
+				pet = JSON.parse(stored);
+			} else {
+				// Intentar obtener del API usando el query param
+				const urlParams = new URLSearchParams(window.location.search);
+				const petId = urlParams.get('pet_id');
+				if (petId) {
+					try {
+						const res = await fetch(`${API}/pets/${petId}`);
+						if (res.ok) {
+							pet = await res.json();
+						}
+					} catch (e) {
+						console.error('Error fetching pet:', e);
+					}
+				}
+			}
 		}
 		loading = false;
 	});
@@ -57,7 +75,6 @@
 
 			const fd = new FormData();
 			fd.append('pet_id', pet.id);
-			fd.append('quiere_tracker', quiere_tracker);
 			fd.append('cedula', cedulaFile);
 			fd.append('recibo', reciboFile);
 
@@ -71,16 +88,15 @@
 
 			const dataRes = await res.json();
 
-			if (res.ok) {
+				if (res.ok) {
 				message = 'Solicitud enviada correctamente';
 				success = true;
 				cedulaFile = null;
 				reciboFile = null;
-				quiere_tracker = false;
 				localStorage.removeItem('selectedPet');
-				// Opcional: redirigir a la pagina principal después de un tiempo
+				// Opcional: redirigir a la pagina principal después de un tiempo (navegación cliente)
 				setTimeout(() => {
-					window.location.href = '/usuarios/mascotas';
+					goto('/usuarios/mascotas');
 				}, 2000);
 				
 			} else {
@@ -111,8 +127,10 @@
 					<a href="/" class="alert-link">Volver al catálogo</a>
 				</div>
 			{:else}
-				<div class="card shadow">
-					<div class="card-header bg-primary text-white">
+				<div class="adopt-card p-3">
+					<div class="card-badge">🐾 SOLICITUD</div>
+
+					<div class="card-head text-center mb-3">
 						<h4 class="mb-0">Solicitud de Adopción</h4>
 					</div>
 
@@ -138,18 +156,18 @@
 
 						<div class="row">
 							<div class="col-md-6 mb-3">
-								<label class="form-label fw-semibold" for="cedula">Cédula de identidad *</label>
-								<input id="cedula" type="file" class="form-control"
+								<label class="form-label cartoon-label" for="cedula">Cédula de identidad *</label>
+								<input id="cedula" type="file" class="form-control cartoon-input"
 									accept="image/*,application/pdf" on:change={handleCedula} />
 							</div>
 							<div class="col-md-6 mb-3">
-								<label class="form-label fw-semibold" for="recibo">Recibo de servicios *</label>
-								<input id="recibo" type="file" class="form-control"
+								<label class="form-label cartoon-label" for="recibo">Recibo de servicios *</label>
+								<input id="recibo" type="file" class="form-control cartoon-input"
 									accept="image/*,application/pdf" on:change={handleRecibo} />
 							</div>
 							<div class="col-12 mb-4">
-								<div class="p-3 bg-light border rounded mb-4">
-									<h6 class="fw-bold text-dark mb-3"><i class="bi bi-shield-check"></i> Requisitos Legales y Compromisos (Colombia)</h6>
+								<div class="legal-cartoon-box p-3 mb-4">
+									<h6 class="fw-bold text-coral d-flex align-items-center gap-2"><i class="bi bi-shield-check"></i> Requisitos Legales y Compromisos</h6>
 									<div class="small text-muted">
 										<p class="mb-2">De acuerdo con la <strong>Ley 1774 de 2016</strong> y la <strong>Ley 2054 de 2020</strong>, la adopción implica una responsabilidad legal sobre el bienestar animal. Al enviar esta solicitud, te comprometes a:</p>
 										<ul class="mb-3">
@@ -163,24 +181,17 @@
 									</div>
 									<div class="form-check">
 										<input class="form-check-input" type="checkbox" id="terms" bind:checked={acceptedTerms} required />
-										<label class="form-check-label fw-bold text-primary" for="terms">
+										<label class="form-check-label fw-bold" for="terms">
 											Acepto los términos del Contrato de Adopción Responsable
 										</label>
 									</div>
 								</div>
 
-								<div class="form-check form-switch p-3 border rounded">
-									<input class="form-check-input ms-0 me-2" type="checkbox" id="quiere_tracker"
-										bind:checked={quiere_tracker} />
-									<label class="form-check-label fw-bold" for="quiere_tracker">
-										¿Deseas incluir un tracker GPS para tu mascota?
-									</label>
-									<p class="x-small text-muted mb-0 ms-4">Recomendado para mayor seguridad en zonas abiertas.</p>
-								</div>
+								<!-- tracker GPS option removed from form per project update -->
 							</div>
 						</div>
 
-						<button class="btn btn-primary w-100 py-3 fw-bold shadow-sm" on:click={submitSolicitud}
+						<button class="btn-publish-cartoon w-100 py-3" on:click={submitSolicitud}
 							disabled={loading || success || !acceptedTerms}>
 							{loading ? 'Procesando Solicitud...' : 'Confirmar y Enviar Solicitud Legal'}
 						</button>
@@ -190,3 +201,39 @@
 		</div>
 	</div>
 </div>
+
+<style>
+	.adopt-card {
+		background: white;
+		border: 3px solid var(--ink);
+		border-radius: 20px;
+		box-shadow: var(--shadow-cartoon-lg);
+		padding: 1rem;
+	}
+
+	.card-badge {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.4rem 0.9rem;
+		border-radius: 999px;
+		background: var(--mustard);
+		color: var(--ink);
+		font-weight: 800;
+		font-size: 0.85rem;
+		border: var(--border-thin);
+		position: relative;
+		top: -10px;
+		margin-bottom: 0.4rem;
+	}
+
+	.card-head h4 { font-family: var(--font-display); margin: 0; }
+
+	.cartoon-label { font-family: var(--font-display); font-weight:700; color:var(--ink); }
+	.cartoon-input { border: 2.5px solid var(--ink); border-radius: 12px; padding: 8px; }
+
+	.legal-cartoon-box { background: var(--cream); border: 2.5px solid var(--ink); border-radius: 12px; }
+
+	.btn-publish-cartoon { background: var(--mustard); color: var(--ink); font-weight:800; border:3px solid var(--ink); border-radius:20px; }
+	.btn-publish-cartoon:hover:not(:disabled) { background:var(--coral); color:white; transform: translate(-3px,-3px); box-shadow: var(--shadow-hover); }
+</style>

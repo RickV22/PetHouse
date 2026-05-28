@@ -93,7 +93,7 @@
 					<div class="col-md-4">
 						<div class="card p-4 border-0 shadow-sm rounded-4 h-100 text-center">
 							<i class="bi bi-geo-fill fs-1 text-success mb-3"></i>
-							<h5 class="fw-bold">Cobertura GPS</h5>
+							<h5 class="fw-bold">Cobertura Geográfica</h5>
 							<p class="text-muted small">Distribución geográfica de los rastreadores activos.</p>
 							<button class="btn btn-sm btn-light mt-auto">Ver detalles</button>
 						</div>

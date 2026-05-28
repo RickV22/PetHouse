@@ -1,47 +1,31 @@
 import API_URL, { getAuthHeaders } from './api.js';
 
 /**
- * Simula auditoría usando endpoints reales del backend
- * ya que no existe /audit-logs en el backend actual.
+ * Use real backend audit endpoints when available.
  */
+function buildQuery(params = {}) {
+	const esc = encodeURIComponent;
+	return Object.keys(params)
+		.filter((k) => params[k] !== undefined && params[k] !== null && params[k] !== '')
+		.map((k) => `${esc(k)}=${esc(params[k])}`)
+		.join('&');
+}
+
 export async function getAuditLogs(params = {}) {
 	try {
 		const headers = getAuthHeaders();
 
-		const [adoptionsRes, usersRes] = await Promise.all([
-			fetch(`${API_URL}/adoptions/`, { headers }),
-			fetch(`${API_URL}/users/`, { headers })
-		]);
+		const query = buildQuery(params);
+		const url = `${API_URL}/audit-logs${query ? `?${query}` : ''}`;
 
-		const adoptions = adoptionsRes.ok ? await adoptionsRes.json() : [];
-		const users = usersRes.ok ? await usersRes.json() : [];
+		const res = await fetch(url, { headers });
+		if (!res.ok) {
+			const err = await res.text().catch(() => '');
+			throw new Error(`Audit logs fetch failed: ${res.status} ${err}`);
+		}
 
-		// Convertir adopciones en registros de auditoría
-		let logs = adoptions.map((a) => ({
-			id: a.id,
-			user_id: a.adoptante_id,
-			action: a.status_id === 1 ? 'create' : 'update',
-			resource: 'adoption',
-			resource_id: a.id,
-			details: `Solicitud de adopción mascota #${a.pet_id}`,
-			changes: a,
-			timestamp: a.fecha_solicitud,
-			status: 'success',
-			ip_address: null
-		}));
-
-		// Aplicar filtros
-		if (params.action)     logs = logs.filter((l) => l.action === params.action);
-		if (params.resource)   logs = logs.filter((l) => l.resource === params.resource);
-		if (params.user_id)    logs = logs.filter((l) => l.user_id === Number(params.user_id));
-		if (params.start_date) logs = logs.filter((l) => new Date(l.timestamp) >= new Date(params.start_date));
-		if (params.end_date)   logs = logs.filter((l) => new Date(l.timestamp) <= new Date(params.end_date));
-
-		// Paginación
-		const offset = params.offset || 0;
-		const limit  = params.limit  || 20;
-		return logs.slice(offset, offset + limit);
-
+		const logs = await res.json();
+		return Array.isArray(logs) ? logs : [];
 	} catch (error) {
 		console.error('getAuditLogs:', error);
 		return [];
@@ -49,23 +33,18 @@ export async function getAuditLogs(params = {}) {
 }
 
 export async function exportAuditLogsCSV(params = {}) {
-	const logs = await getAuditLogs(params);
+	try {
+		const headers = getAuthHeaders();
+		const query = buildQuery(params);
+		const url = `${API_URL}/audit-logs/export/csv${query ? `?${query}` : ''}`;
 
-	const headers = ['ID', 'Usuario', 'Acción', 'Recurso', 'Recurso ID', 'Fecha', 'Estado'];
-	const rows = logs.map((l) => [
-		l.id,
-		l.user_id ? `Usuario #${l.user_id}` : 'Sistema',
-		l.action,
-		l.resource,
-		l.resource_id || '-',
-		l.timestamp ? new Date(l.timestamp).toLocaleString('es-CO') : '-',
-		l.status
-	]);
+		const res = await fetch(url, { headers });
+		if (!res.ok) throw new Error('Export failed');
 
-	const csv = [headers, ...rows].map((r) => r.join(',')).join('\n');
-
-	return {
-		content: csv,
-		filename: `auditoria_${new Date().toISOString().slice(0, 10)}.csv`
-	};
+		const data = await res.json();
+		return data;
+	} catch (error) {
+		console.error('exportAuditLogsCSV:', error);
+		throw error;
+	}
 }

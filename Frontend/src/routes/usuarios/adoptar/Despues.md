@@ -6,7 +6,7 @@
 	let loading = true; // 👈 nuevo
 	let cedulaFile = null;
 	let reciboFile = null;
-	let quiere_tracker = false;
+
 	let cedulaPreview = '';
 	let reciboPreview = '';
 	let message = '';
@@ -41,7 +41,7 @@
 		const formData = new FormData();
 		formData.append('pet_id', pet.id);
 		formData.append('status_id', 1);
-		formData.append('quiere_tracker', quiere_tracker);
+
 		formData.append('cedula', cedulaFile);
 		formData.append('recibo', reciboFile);
 
@@ -161,7 +161,7 @@
     									bind:checked={quiere_tracker}
     								/>
     								<label class="form-check-label" for="quiere_tracker">
-    									¿Deseas incluir un tracker GPS para tu mascota?
+    									
     								</label>
     							</div>
     						</div>

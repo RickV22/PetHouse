@@ -68,3 +68,7 @@ class TokenResponse(BaseModel):
     access_token: str
     token_type: str
     user: UserResponse
+
+
+class SocialLoginRequest(BaseModel):
+    id_token: str

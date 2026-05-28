@@ -71,8 +71,8 @@ export function requireAuth(currentUrl, message = 'Para realizar esta acción de
 					icon: 'info',
 					confirmButtonText: 'Iniciar Sesión'
 				}).then(() => {
-					// Redirigir al login después de cerrar el modal
-					window.location.href = '/login';
+								// Redirigir al login después de cerrar el modal (navegación cliente)
+								import('$app/navigation').then(({ goto }) => goto('/login'));
 				});
 			});
 		}

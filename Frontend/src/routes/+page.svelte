@@ -69,9 +69,7 @@
 					Cada mascota merece un hogar lleno de amor.
 					Descubre quién te está esperando. 🐶🐱
 				</p>
-				<div class="hero-search" in:fly={{ y: 20, duration: 600, delay: 400 }}>
-					<SearchBar bind:search />
-				</div>
+				
 				<div class="hero-stats" in:fly={{ y: 20, duration: 600, delay: 500 }}>
 					<div class="stat-bubble">
 						<span class="stat-number">{data.pets.length}</span>
@@ -452,7 +450,7 @@
 		border-radius: 50%;
 		pointer-events: none;
 		z-index: 1;
-		filter: blur(1px);
+		/* removed blur filter per request */
 	}
 
 	.pb-1 {

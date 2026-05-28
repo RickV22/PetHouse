@@ -4,6 +4,7 @@
 	import { fly, fade } from 'svelte/transition';
 	import AdminNavbar from '$lib/components/AdminNavbar.svelte';
 	import { getAuditLogs, exportAuditLogsCSV } from '../../../api/audit_service.js';
+	import API_URL, { getAuthHeaders } from '../../../api/api.js';
 
 	let auditLogs = [];
 	let filteredLogs = [];
@@ -44,6 +45,39 @@
 
 			const response = await getAuditLogs(params);
 			auditLogs = Array.isArray(response) ? response : response.data || [];
+
+			// Enriquecer con nombres de usuario para mejor lectura
+			try {
+				const headers = getAuthHeaders();
+				const usersRes = await fetch(`${API_URL}/users/`, { headers });
+				if (usersRes.ok) {
+					const users = await usersRes.json();
+					const userMap = {};
+					users.forEach(u => { userMap[u.id] = `${u.name} ${u.last_name || ''}`.trim(); });
+					auditLogs = auditLogs.map(l => ({ ...l, user_name: l.user_id ? userMap[l.user_id] || `Usuario #${l.user_id}` : 'Sistema' }));
+				} else {
+					console.warn('GET /users/ failed:', usersRes.status);
+					// Fallback: fetch individual users by id
+					const ids = Array.from(new Set(auditLogs.map(l => l.user_id).filter(Boolean)));
+					const userMap = {};
+					await Promise.all(ids.map(async (id) => {
+						try {
+							const r = await fetch(`${API_URL}/users/${id}`, { headers });
+							if (r.ok) {
+								const u = await r.json();
+								userMap[u.id] = `${u.name} ${u.last_name || ''}`.trim();
+							}
+						} catch (err) {
+							console.warn('Failed to fetch user', id, err);
+						}
+					}));
+					auditLogs = auditLogs.map(l => ({ ...l, user_name: l.user_id ? userMap[l.user_id] || `Usuario #${l.user_id}` : 'Sistema' }));
+				}
+			} catch (e) {
+				console.error('User enrichment failed:', e);
+				auditLogs = auditLogs.map(l => ({ ...l, user_name: l.user_id ? `Usuario #${l.user_id}` : 'Sistema' }));
+			}
+
 			applySearch();
 		} catch (error) {
 			console.error('Error fetching audit logs:', error);
@@ -259,7 +293,7 @@
 											</div>
 											<div>
 												<div class="fw-bold small">
-													{log.user_id ? `Usuario #${log.user_id}` : 'Sistema'}
+													{log.user_name || (log.user_id ? `Usuario #${log.user_id}` : 'Sistema')}
 												</div>
 												<div class="text-muted x-small">{log.ip_address || 'Sin IP'}</div>
 											</div>
@@ -318,9 +352,7 @@
 							<div class="detail-item p-3 rounded-4">
 								<label class="x-small text-muted text-uppercase fw-bold">Actor</label>
 								<div class="fw-bold">
-									{selectedLog.user_id
-										? `Usuario ID #${selectedLog.user_id}`
-										: 'Proceso del Sistema'}
+									{selectedLog.user_name || (selectedLog.user_id ? `Usuario ID #${selectedLog.user_id}` : 'Proceso del Sistema')}
 								</div>
 							</div>
 						</div>

@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
+import traceback
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -13,9 +14,11 @@ from app.controllers.user_controller import (
     restore_user,
     get_user_by_email,
     login_user,
+    login_with_google,
 
 )
 from app.schemas.user_schema import LoginRequest, TokenResponse
+from app.schemas.user_schema import SocialLoginRequest
 from app.auth.dependencies import get_current_admin_user
 
 router = APIRouter(prefix="/users", tags=["Users"])
@@ -24,7 +27,29 @@ router = APIRouter(prefix="/users", tags=["Users"])
 # LOGIN - Must be before {user_id} to avoid conflict
 @router.post("/login", response_model=TokenResponse)
 def login(data: LoginRequest, db: Session = Depends(get_db)):
-    return login_user(db, data.email, data.password)
+    try:
+        return login_user(db, data.email, data.password)
+    except HTTPException:
+        # Re-raise known HTTP exceptions (404, 400, etc.) so FastAPI handles them
+        raise
+    except Exception as e:
+        # Log full traceback for debugging while returning a safe 500 response
+        tb = traceback.format_exc()
+        print("[ERROR] Exception in /users/login:\n", tb)
+        raise HTTPException(status_code=500, detail="Internal server error during login")
+
+
+
+@router.post('/google-login', response_model=TokenResponse)
+def google_login(payload: SocialLoginRequest, db: Session = Depends(get_db)):
+    try:
+        return login_with_google(db, payload.id_token)
+    except HTTPException:
+        raise
+    except Exception:
+        tb = traceback.format_exc()
+        print('[ERROR] Exception in /users/google-login:\n', tb)
+        raise HTTPException(status_code=500, detail='Internal server error during Google login')
 
 
 # REGISTER (Public)

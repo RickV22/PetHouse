@@ -68,37 +68,37 @@
 			<div class="col-lg-10">
 				<div class="filter-card bg-white p-4 shadow-lg rounded-4">
 					<div class="row g-3 align-items-center">
-						<div class="col-md-5">
+						<div class="col-md-6">
 							<div class="search-input-wrapper position-relative">
 								<i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
 								<input
 									type="search"
-									class="form-control form-control-lg ps-5 rounded-pill border-light bg-light"
+									class="form-control form-control-lg ps-5 rounded-pill border-light bg-light cartoon-input"
 									placeholder="Buscar por nombre o raza..."
 									bind:value={search}
 								/>
 							</div>
 						</div>
-						<div class="col-md-7">
-							<div class="d-flex flex-wrap gap-2 justify-content-md-end">
+						<div class="col-md-6">
+							<div class="d-flex flex-wrap gap-2 justify-content-md-end align-items-center">
 								<button 
-									class="btn filter-btn {filterType === 'all' ? 'active' : ''}" 
+									class="filter-btn {filterType === 'all' ? 'active' : ''}" 
 									on:click={() => setFilter('all')}
 								>Todos</button>
 								<button 
-									class="btn filter-btn {filterType === 'perro' ? 'active' : ''}" 
+									class="filter-btn {filterType === 'perro' ? 'active' : ''}" 
 									on:click={() => setFilter('perro')}
 								>
 									<i class="bi bi-dog me-1"></i> Perros
 								</button>
 								<button 
-									class="btn filter-btn {filterType === 'gato' ? 'active' : ''}" 
+									class="filter-btn {filterType === 'gato' ? 'active' : ''}" 
 									on:click={() => setFilter('gato')}
 								>
 									<i class="bi bi-cat me-1"></i> Gatos
 								</button>
 								<button 
-									class="btn filter-btn {filterType === 'otro' ? 'active' : ''}" 
+									class="filter-btn {filterType === 'otro' ? 'active' : ''}" 
 									on:click={() => setFilter('otro')}
 								>Otros</button>
 							</div>
@@ -164,29 +164,33 @@
 		margin-top: -80px;
 		z-index: 10;
 		position: relative;
+		background: var(--cream);
+		border: var(--border-thick);
+		border-radius: 28px;
+		box-shadow: var(--shadow-cartoon-lg);
 	}
 
 	.filter-btn {
-		padding: 0.6rem 1.5rem;
-		border-radius: 50px;
-		border: 1px solid #eee;
-		background: white;
-		color: #666;
-		font-weight: 500;
-		transition: all 0.3s ease;
+		padding: 0.55rem 1.25rem;
+		border-radius: var(--radius-pill);
+		border: var(--border-thin);
+		background: var(--cream);
+		color: var(--ink);
+		font-weight: 700;
+		transition: transform 0.18s var(--bounce), box-shadow 0.18s ease, background 0.18s ease;
+		box-shadow: var(--shadow-cartoon-sm);
 	}
 
 	.filter-btn:hover {
-		background: #f8f9fa;
-		border-color: #4361ee;
-		color: #4361ee;
+		transform: translateY(-3px);
+		box-shadow: var(--shadow-hover);
 	}
 
 	.filter-btn.active {
-		background: #4361ee;
-		color: white;
-		border-color: #4361ee;
-		box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+		background: linear-gradient(135deg, var(--mustard), var(--mustard-dark));
+		color: var(--ink);
+		border: var(--border-thick);
+		box-shadow: var(--shadow-hover);
 	}
 
 	.search-input-wrapper input:focus {

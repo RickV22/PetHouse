@@ -1,4 +1,4 @@
-<script>
+﻿<script>
 	import Navbar from '$lib/components/Navbar.svelte';
 </script>
 
@@ -10,8 +10,7 @@
 
 		<div class="d-flex flex-column gap-3 mt-4">
 			<a class="btn btn-primary" href="/usuarios/mascotas">Ver mascotas disponibles</a>
-			<a class="btn btn-secondary" href="/usuarios/publicar">Publicar una mascota</a>
-			<a class="btn btn-outline-primary" href="/usuarios/rastreador">Ver rastreadores</a>
-		</div>
+			<a class="btn btn-secondary" href="/usuarios/publicar">Publicar una mascota</a></div>
 	</div>
 </section>
+

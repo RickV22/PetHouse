@@ -10,4 +10,5 @@ python-multipart
 email-validator
 pytest
 python-jose
+requests
 

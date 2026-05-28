@@ -1,4 +1,4 @@
-<script>
+﻿<script>
 	import { onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
 	import { goto } from '$app/navigation';
@@ -100,15 +100,7 @@
 					<a class="nav-link nav-custom px-3" href="/usuarios/publicar">
 						<span class="nav-emoji">📝</span> Publicar
 					</a>
-				</li>
-
-				<li class="nav-item">
-					<a class="nav-link nav-custom px-3" href="/usuarios/rastreador">
-						<span class="nav-emoji">📍</span> Rastreador
-					</a>
-				</li>
-
-				<li class="nav-item user-menu-item ms-lg-3 mt-3 mt-lg-0 pe-0">
+				</li><li class="nav-item user-menu-item ms-lg-3 mt-3 mt-lg-0 pe-0">
 					{#if user}
 						<div class="dropdown">
 							<button
@@ -390,3 +382,4 @@
 		box-shadow: 3px 3px 0 var(--ink) !important;
 	}
 </style>
+
