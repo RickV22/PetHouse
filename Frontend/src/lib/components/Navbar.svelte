@@ -3,6 +3,7 @@
 	import { fly } from 'svelte/transition';
 	import { goto } from '$app/navigation';
 	import { auth, clearAuth } from '$lib/stores/auth.js';
+	import { isAdminRole } from '$lib/utils/roles.js';
 	import Swal from 'sweetalert2';
 	export let showLogin = true;
 	export let variant = 'default';
@@ -124,7 +125,7 @@
 									<div class="text-muted small">{user.email}</div>
 								</li>
 
-								{#if user.role_id === 1}
+								{#if isAdminRole(user)}
 									<li>
 										<a class="dropdown-item cartoon-dropdown-item py-2" href="/admin">
 											<i class="bi bi-speedometer2 me-2"></i> Panel Admin

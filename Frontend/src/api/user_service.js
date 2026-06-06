@@ -1,10 +1,13 @@
-import API_URL from './api';
+import API_URL, { getAuthHeaders } from './api';
 
 /* =========================
    GET ALL USERS
 ========================= */
 export async function getUsers() {
-	const response = await fetch(`${API_URL}/users/`);
+	const response = await fetch(`${API_URL}/users/`, {
+		cache: 'no-store',
+		headers: getAuthHeaders()
+	});
 
 	if (!response.ok) {
 		throw new Error('Error obteniendo usuarios');
@@ -18,7 +21,10 @@ export async function getUsers() {
    GET USER BY ID
 ========================= */
 export async function getUser(id) {
-	const response = await fetch(`${API_URL}/users/${id}`);
+	const response = await fetch(`${API_URL}/users/${id}`, {
+		cache: 'no-store',
+		headers: getAuthHeaders()
+	});
 
 	if (!response.ok) {
 		throw new Error('Usuario no encontrado');
@@ -31,7 +37,10 @@ export async function getUser(id) {
    GET USER BY EMAIL
 ========================= */
 export async function getUserByEmail(email) {
-	const response = await fetch(`${API_URL}/users/email/${email}`);
+	const response = await fetch(`${API_URL}/users/email/${email}`, {
+		cache: 'no-store',
+		headers: getAuthHeaders()
+	});
 
 	if (!response.ok) {
 		throw new Error('Usuario no encontrado');
@@ -123,7 +132,9 @@ export async function updateUser(id, user) {
 ========================= */
 export async function deleteUser(id) {
 	const response = await fetch(`${API_URL}/users/${id}`, {
-		method: 'DELETE'
+		method: 'DELETE',
+		headers: getAuthHeaders(),
+		cache: 'no-store'
 	});
 
 	if (!response.ok) {
@@ -138,7 +149,9 @@ export async function deleteUser(id) {
 ========================= */
 export async function restoreUser(id) {
 	const response = await fetch(`${API_URL}/users/restore/${id}`, {
-		method: 'PUT'
+		method: 'PUT',
+		headers: getAuthHeaders(),
+		cache: 'no-store'
 	});
 
 	if (!response.ok) {

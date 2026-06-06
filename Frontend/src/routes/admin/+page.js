@@ -1,4 +1,5 @@
 import { redirect } from '@sveltejs/kit';
+import { isAdminRole } from '$lib/utils/roles.js';
 
 export async function load({ url }) {
 	// Verificar si estamos en el cliente
@@ -14,8 +15,8 @@ export async function load({ url }) {
 		try {
 			const user = JSON.parse(userStr);
 
-			// Verificar si el usuario tiene permisos de admin (role_id 1)
-			if (user.role_id !== 1) {
+			// Verificar si el usuario tiene permisos de admin según la base de datos real
+			if (!isAdminRole(user)) {
 				// Usuario normal, redirigir a la página principal
 				throw redirect(302, '/');
 			}

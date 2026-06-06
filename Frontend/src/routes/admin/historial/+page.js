@@ -1,4 +1,5 @@
 import { redirect } from '@sveltejs/kit';
+import { isAdminRole } from '$lib/utils/roles.js';
 
 export async function load() {
 	if (typeof window !== 'undefined') {
@@ -11,7 +12,7 @@ export async function load() {
 
 		try {
 			const user = JSON.parse(userStr);
-			if (user.role_id !== 1) {
+			if (!isAdminRole(user)) {
 				throw redirect(302, '/');
 			}
 

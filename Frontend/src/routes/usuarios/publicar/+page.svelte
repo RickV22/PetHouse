@@ -2,6 +2,7 @@
 	import Navbar from '$lib/components/Navbar.svelte';
 	import { createPet } from '../../../api/pet_service.js';
 	import { auth } from '$lib/stores/auth.js';
+	import { isAdminRole } from '$lib/utils/roles.js';
 	import Swal from 'sweetalert2';
 	import { fly } from 'svelte/transition';
 
@@ -64,7 +65,7 @@
 		try {
 			await createPet(formData);
 			
-			const isAdmin = user?.role_id === 1;
+			const isAdmin = isAdminRole(user);
 
 			await Swal.fire({
 				title: isAdmin ? '¡Publicada!' : '¡Solicitud Recibida! 🐾',

@@ -6,6 +6,7 @@
 
 	import { getUsers, createUser, updateUser, deleteUser } from '../../api/user_service.js';
 	import AdminNavbar from '$lib/components/AdminNavbar.svelte';
+	import { getUserRoleLabel, roleLabelToId } from '$lib/utils/roles.js';
 
 	let users = [];
 	let editUserId = null;
@@ -92,7 +93,7 @@
 					u.name,
 					u.last_name,
 					u.email,
-					u.role_id === 1 ? 'Admin' : 'Usuario',
+					getUserRoleLabel(u),
 					u.created_at ? new Date(u.created_at).toLocaleDateString('es-CO') : '—',
 					u
 				]),
@@ -123,7 +124,7 @@
 			last_name: newUser.last_name,
 			email: newUser.email,
 			password: newUser.password,
-			role_id: newUser.role === 'Admin' ? 1 : 2
+			role_id: roleLabelToId(newUser.role)
 		};
 
 		try {
@@ -190,7 +191,7 @@
 			last_name: user.last_name,
 			email: user.email,
 			password: '',
-			role: user.role_id === 1 ? 'Admin' : 'Usuario',
+			role: getUserRoleLabel(user),
 			status: user.status ?? 'Activo'
 		};
 	}
@@ -200,7 +201,7 @@
 			name: newUser.name,
 			last_name: newUser.last_name,
 			email: newUser.email,
-			role_id: newUser.role === 'Admin' ? 1 : 2
+			role_id: roleLabelToId(newUser.role)
 		};
 
 		if (newUser.password && newUser.password.length > 0) {
@@ -277,8 +278,7 @@
 			<div class="col-md-2">
 				<select class="form-select" bind:value={newUser.role}>
 					<option>Admin</option>
-					<option>Usuario</option>
-				</select>
+					<option>Usuario</option>						<option>SUPERADMIN</option>				</select>
 			</div>
 		</div>
 

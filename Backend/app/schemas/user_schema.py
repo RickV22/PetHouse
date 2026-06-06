@@ -47,6 +47,7 @@ class UserUpdate(BaseModel):
 class UserResponse(BaseModel):
     id: int
     role_id: int
+    role_name: Optional[str] = None
     name: str
     last_name: str
     email: EmailStr

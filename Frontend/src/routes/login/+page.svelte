@@ -6,6 +6,7 @@
 	import Navbar from '$lib/components/Navbar.svelte';
 	import { setAuth } from '$lib/stores/auth.js';
 	import { getAndClearRedirectUrl } from '$lib/utils/auth.js';
+	import { isAdminRole } from '$lib/utils/roles.js';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import Swal from 'sweetalert2';
@@ -46,7 +47,7 @@
 			Swal.fire({ title: 'Bienvenido', text: `Hola ${data.user.name}`, icon: 'success' });
 			const redirectUrl = getAndClearRedirectUrl();
 			if (redirectUrl) goto(redirectUrl);
-			else goto(data.user.role_id === 1 ? '/admin' : '/');
+			else goto(isAdminRole(data.user) ? '/admin' : '/');
 		} catch (e) {
 			console.error('Google login error', e);
 			Swal.fire('Error', 'No se pudo iniciar sesión con Google.', 'error');
@@ -226,16 +227,8 @@
 					// Redirigir a la URL guardada
 					goto(redirectUrl);
 				} else {
-					// Redirección por rol si no hay URL guardada
-					const roleId = result.user.role_id;
-					if (roleId === 1) {
-						goto('/admin');
-					} else {
-						// Usuario normal va a la página principal
-						goto('/');
-					}
+					goto(isAdminRole(result.user) ? '/admin' : '/');
 				}
-
 			} catch (error) {
 				Swal.fire({
 					title: 'Error',

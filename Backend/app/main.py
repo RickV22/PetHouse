@@ -1,5 +1,8 @@
+import time
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.exc import OperationalError
 
 from app.db.session import engine
 from app.db.base import Base
@@ -22,8 +25,17 @@ from app.routes.audit_log_routes import router as audit_log_router
 
 app = FastAPI()
 
-# Crear tablas automáticamente
-Base.metadata.create_all(bind=engine)
+
+@app.on_event("startup")
+def startup_event():
+    for attempt in range(30):
+        try:
+            Base.metadata.create_all(bind=engine)
+            return
+        except OperationalError:
+            if attempt == 29:
+                raise
+            time.sleep(1)
 
 # ==========================
 # CORS
@@ -39,7 +51,7 @@ app.add_middleware(
         "http://localhost:5175",
         "http://127.0.0.1:5175",
         "http://localhost:4173",
-        "http://127.0.0.1:4173",
+        "http://127.0.0.1:8000",
         "http://localhost:3000",
         "http://127.0.0.1:3000",
     ],
