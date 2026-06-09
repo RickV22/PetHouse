@@ -6,12 +6,14 @@
 
 	import { getUsers, createUser, updateUser, deleteUser } from '../../api/user_service.js';
 	import AdminNavbar from '$lib/components/AdminNavbar.svelte';
+	import PasswordRequirements from '$lib/components/PasswordRequirements.svelte';
 	import { getUserRoleLabel, roleLabelToId } from '$lib/utils/roles.js';
 
 	let users = [];
 	let editUserId = null;
 	let grid;
 	let sortOrder = 'recent'; // 'recent' or 'alphabetical'
+	let showPasswordRequirements = false;
 
 	let newUser = {
 		name: '',
@@ -21,6 +23,27 @@
 		role: 'Usuario',
 		status: 'Activo'
 	};
+
+	// Validación de requisitos de contraseña
+	$: passwordRequirements = {
+		minLength: newUser.password.length >= 8,
+		hasUppercase: /[A-Z]/.test(newUser.password),
+		hasLowercase: /[a-z]/.test(newUser.password),
+		hasNumber: /\d/.test(newUser.password),
+		hasSpecial: /[!@#$%^&*(),.?":{}|<>]/.test(newUser.password)
+	};
+
+	$: isPasswordValid = Object.values(passwordRequirements).every(req => req === true);
+
+	function isValidPassword(pwd) {
+		return (
+			pwd.length >= 8 &&
+			/[A-Z]/.test(pwd) &&
+			/[a-z]/.test(pwd) &&
+			/\d/.test(pwd) &&
+			/[!@#$%^&*(),.?":{}|<>]/.test(pwd)
+		);
+	}
 
 	// =========================
 	// LOAD USERS
@@ -119,6 +142,16 @@
 			return;
 		}
 
+		// Validar requisitos de contraseña
+		if (!isValidPassword(newUser.password)) {
+			Swal.fire({
+				title: 'Contraseña inválida',
+				text: 'La contraseña debe cumplir todos los requisitos mostrados.',
+				icon: 'error'
+			});
+			return;
+		}
+
 		const userData = {
 			name: newUser.name,
 			last_name: newUser.last_name,
@@ -205,6 +238,15 @@
 		};
 
 		if (newUser.password && newUser.password.length > 0) {
+			// Validar requisitos de contraseña si se proporciona una nueva
+			if (!isValidPassword(newUser.password)) {
+				Swal.fire({
+					title: 'Contraseña inválida',
+					text: 'La contraseña debe cumplir todos los requisitos mostrados.',
+					icon: 'error'
+				});
+				return;
+			}
 			userData.password = newUser.password;
 		}
 
@@ -215,6 +257,11 @@
 			editUserId = null;
 		} catch (error) {
 			console.error('Error actualizando usuario:', error);
+			Swal.fire({
+				title: 'Error',
+				text: error.message || 'No se pudo actualizar el usuario',
+				icon: 'error'
+			});
 		}
 	}
 
@@ -272,15 +319,20 @@
 					type="password"
 					placeholder="Contraseña"
 					bind:value={newUser.password}
+					on:focus={() => (showPasswordRequirements = true)}
 				/>
 			</div>
 
 			<div class="col-md-2">
 				<select class="form-select" bind:value={newUser.role}>
 					<option>Admin</option>
-					<option>Usuario</option>						<option>SUPERADMIN</option>				</select>
+					<option>Usuario</option>					<option>SUPERADMIN</option>				</select>
 			</div>
 		</div>
+
+		{#if showPasswordRequirements && newUser.password}
+			<PasswordRequirements password={newUser.password} />
+		{/if}
 
 		<div class="mt-3">
 			{#if editUserId}
