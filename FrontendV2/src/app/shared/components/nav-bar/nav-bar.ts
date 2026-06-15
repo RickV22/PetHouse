@@ -3,15 +3,15 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import Swal from 'sweetalert2';
 import { Subscription } from 'rxjs';
-//import { AuthService } from '../../stores/auth.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { isAdminRole } from '../../utils/roles';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
   imports: [CommonModule, RouterModule],
-  templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.css'],
+  templateUrl: './nav-bar.html',
+  styleUrls: ['./nav-bar.css'],
 })
 export class NavbarComponent implements OnInit, OnDestroy {
   @Input() showLogin = true;
@@ -24,7 +24,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    //private authService: AuthService,
+    private authService: AuthService,
   ) {}
 
   ngOnInit(): void {
@@ -80,7 +80,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
         didOpen: () => Swal.showLoading(),
       });
 
-      //this.authService.clearAuth();
+      this.authService.clearAuth();
       this.router.navigate(['/']);
     }
   }

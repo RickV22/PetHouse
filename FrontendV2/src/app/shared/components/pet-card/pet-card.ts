@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { NgClass, NgIf } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { formatAge } from '../../utils/formatAge';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
@@ -8,11 +8,11 @@ import { Router, RouterModule } from '@angular/router';
   selector: 'app-pet-card',
   standalone: true,
 
-  imports: [NgClass, NgIf, CommonModule, RouterModule],
-  templateUrl: './pet-card.component.html',
-  styleUrl: './pet-card.component.css',
+  imports: [NgClass, CommonModule, RouterModule],
+  templateUrl: './pet-card.html',
+  styleUrl: './pet-card.css',
 })
-export class Petcard {
+export class PetCardComponent {
   @Input() pet: any;
   @Output() view = new EventEmitter<void>();
 

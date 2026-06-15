@@ -1,0 +1,169 @@
+<app-navbar [variant]="'login'" [showLogin]="false" />
+
+<section class="login-wrapper">
+  <div class="login-deco deco-1"></div>
+  <div class="login-deco deco-2"></div>
+
+  <div class="login-card px-4">
+    <div class="card-badge">🐾 PET HOUSE</div>
+
+    <h2>{{ isRegister ? 'Crear cuenta' : 'Bienvenido' }}</h2>
+    <p class="subtitle">
+      {{
+        isRegister
+          ? 'Regístrate para comenzar una nueva historia'
+          : 'Inicia sesión para continuar con tu búsqueda'
+      }}
+    </p>
+
+    <!-- Formulario -->
+    <div>
+      <!-- Nombre y apellido (solo registro) -->
+      <div *ngIf="isRegister" class="row g-2 mb-3">
+        <div class="col-md-6 text-start">
+          <label for="nombre" class="small fw-bold">Nombre</label>
+          <input
+            id="nombre"
+            class="form-control form-control-sm"
+            type="text"
+            [(ngModel)]="nombre"
+            required
+          />
+        </div>
+        <div class="col-md-6 text-start">
+          <label for="apellido" class="small fw-bold">Apellido</label>
+          <input
+            id="apellido"
+            class="form-control form-control-sm"
+            type="text"
+            [(ngModel)]="apellido"
+            required
+          />
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="input-group mb-3">
+        <label class="small fw-bold">Correo electrónico</label>
+        <input
+          class="form-control form-control-sm"
+          type="email"
+          [(ngModel)]="email"
+          placeholder="ejemplo@email.com"
+          required
+        />
+      </div>
+
+      <!-- Contraseña -->
+      <div class="input-group mb-3">
+        <label class="small fw-bold">Contraseña</label>
+        <div class="password-wrapper">
+          <input
+            class="form-control form-control-sm"
+            [type]="showPassword ? 'text' : 'password'"
+            [(ngModel)]="password"
+            placeholder="••••••••"
+            required
+          />
+          <span class="toggle-password" (click)="showPassword = !showPassword">
+            {{ showPassword ? '👁' : '👁‍🗨' }}
+          </span>
+        </div>
+
+        <!-- Reglas contraseña (solo registro) -->
+        <div *ngIf="isRegister" class="password-guidelines mt-3 p-3 rounded-3">
+          <div class="row g-1">
+            <div
+              class="col-6 x-small"
+              [class.text-success]="pwdRules.length"
+              [class.text-muted]="!pwdRules.length"
+            >
+              <i
+                class="bi"
+                [class.bi-check-circle-fill]="pwdRules.length"
+                [class.bi-circle]="!pwdRules.length"
+              ></i>
+              8+ caracteres
+            </div>
+            <div
+              class="col-6 x-small"
+              [class.text-success]="pwdRules.upper && pwdRules.lower"
+              [class.text-muted]="!(pwdRules.upper && pwdRules.lower)"
+            >
+              <i
+                class="bi"
+                [class.bi-check-circle-fill]="pwdRules.upper && pwdRules.lower"
+                [class.bi-circle]="!(pwdRules.upper && pwdRules.lower)"
+              ></i>
+              Mayúsculas y minúsculas
+            </div>
+            <div
+              class="col-6 x-small"
+              [class.text-success]="pwdRules.number"
+              [class.text-muted]="!pwdRules.number"
+            >
+              <i
+                class="bi"
+                [class.bi-check-circle-fill]="pwdRules.number"
+                [class.bi-circle]="!pwdRules.number"
+              ></i>
+              Número
+            </div>
+            <div
+              class="col-6 x-small"
+              [class.text-success]="pwdRules.special"
+              [class.text-muted]="!pwdRules.special"
+            >
+              <i
+                class="bi"
+                [class.bi-check-circle-fill]="pwdRules.special"
+                [class.bi-circle]="!pwdRules.special"
+              ></i>
+              Símbolo
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="passwordError" class="error-text text-danger x-small mt-2 fw-bold">
+          {{ passwordError }}
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <button
+        class="btn-login py-2 mt-3"
+        (click)="handleSubmit()"
+        [disabled]="isRegister && !isPasswordValid"
+      >
+        {{ isRegister ? 'Registrarse' : 'Iniciar Sesión' }}
+      </button>
+    </div>
+
+    <!-- Google Sign-In -->
+    <div class="mt-3 d-flex justify-content-center google-signin-wrapper">
+      <ng-container *ngIf="googleClientId; else noGoogle">
+        <div id="googleSignInDiv" (click)="handleGoogleClick()"></div>
+      </ng-container>
+      <ng-template #noGoogle>
+        <div class="google-missing text-center p-3">
+          <p class="mb-1">Google Sign-In no está configurado.</p>
+          <small class="text-muted">
+            Agrega <strong>GOOGLE_CLIENT_ID</strong> en el componente y reinicia.
+          </small>
+        </div>
+      </ng-template>
+    </div>
+
+    <!-- Toggle login/registro -->
+    <p class="footer-text">
+      <ng-container *ngIf="!isRegister">
+        ¿No tienes cuenta?
+        <a href="#" (click)="$event.preventDefault(); toggleMode()">Regístrate</a>
+      </ng-container>
+      <ng-container *ngIf="isRegister">
+        ¿Ya tienes cuenta?
+        <a href="#" (click)="$event.preventDefault(); toggleMode()">Inicia sesión</a>
+      </ng-container>
+    </p>
+  </div>
+</section>

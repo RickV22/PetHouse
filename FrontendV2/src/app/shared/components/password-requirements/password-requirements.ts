@@ -14,8 +14,8 @@ interface Requirements {
   selector: 'app-password-requirements',
   standalone: true, // 👈
   imports: [CommonModule, RouterModule],
-  templateUrl: './password-requirements.component.html',
-  styleUrls: ['./password-requirements.component.css'],
+  templateUrl: './password-requirements.html',
+  styleUrls: ['./password-requirements.css'],
 })
 export class PasswordRequirementsComponent {
   @Input() password = '';

@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PetModal } from './pet-modal';
+import { PetModalComponent } from './pet-modal';
 
-describe('PetModal', () => {
-  let component: PetModal;
-  let fixture: ComponentFixture<PetModal>;
+describe('PetModalComponent', () => {
+  let component: PetModalComponent;
+  let fixture: ComponentFixture<PetModalComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PetModal],
+      imports: [PetModalComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(PetModal);
+    fixture = TestBed.createComponent(PetModalComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

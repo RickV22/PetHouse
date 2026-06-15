@@ -1,0 +1,125 @@
+<app-navbar />
+
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <!-- Loading -->
+      <div *ngIf="loading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status"></div>
+      </div>
+
+      <!-- Sin mascota -->
+      <div *ngIf="!loading && !pet" class="alert alert-warning text-center">
+        No se seleccionó ninguna mascota.
+        <a routerLink="/" class="alert-link">Volver al catálogo</a>
+      </div>
+
+      <!-- Formulario -->
+      <div *ngIf="!loading && pet" class="adopt-card p-3">
+        <div class="card-badge">🐾 SOLICITUD</div>
+
+        <div class="card-head text-center mb-3">
+          <h4 class="mb-0">Solicitud de Adopción</h4>
+        </div>
+
+        <div class="card-body">
+          <!-- Mensaje -->
+          <div
+            *ngIf="message"
+            class="alert"
+            [class.alert-success]="success"
+            [class.alert-danger]="!success"
+          >
+            {{ message }}
+          </div>
+
+          <!-- Info mascota -->
+          <div class="d-flex align-items-center gap-3 p-3 mb-4 border rounded bg-light">
+            <img
+              *ngIf="pet.image_url"
+              [src]="pet.image_url"
+              [alt]="pet.name"
+              class="rounded"
+              style="width: 80px; height: 80px; object-fit: cover"
+            />
+            <div>
+              <h5 class="mb-0 fw-bold">{{ pet.name }}</h5>
+              <p class="text-muted mb-0">
+                {{ ageText }} · {{ pet.species ?? '' }} · {{ pet.gender ?? '' }}
+              </p>
+              <small *ngIf="pet.race" class="text-muted">{{ pet.race }}</small>
+            </div>
+          </div>
+
+          <!-- Archivos -->
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label cartoon-label" for="cedula">Cédula de identidad *</label>
+              <input
+                id="cedula"
+                type="file"
+                class="form-control cartoon-input"
+                accept="image/*,application/pdf"
+                (change)="handleCedula($event)"
+              />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label cartoon-label" for="recibo">Recibo de servicios *</label>
+              <input
+                id="recibo"
+                type="file"
+                class="form-control cartoon-input"
+                accept="image/*,application/pdf"
+                (change)="handleRecibo($event)"
+              />
+            </div>
+
+            <!-- Legal -->
+            <div class="col-12 mb-4">
+              <div class="legal-cartoon-box p-3 mb-4">
+                <h6 class="fw-bold text-coral d-flex align-items-center gap-2">
+                  <i class="bi bi-shield-check"></i> Requisitos Legales y Compromisos
+                </h6>
+                <div class="small text-muted">
+                  <p class="mb-2">
+                    De acuerdo con la <strong>Ley 1774 de 2016</strong> y la
+                    <strong>Ley 2054 de 2020</strong>, la adopción implica una responsabilidad legal
+                    sobre el bienestar animal. Al enviar esta solicitud, te comprometes a:
+                  </p>
+                  <ul class="mb-3">
+                    <li>Ser mayor de edad (+18 años) con identificación válida.</li>
+                    <li>Garantizar un espacio seguro y digno para el animal.</li>
+                    <li>Cubrir gastos de alimentación, salud y bienestar.</li>
+                    <li><strong>Esterilización obligatoria</strong> (si no lo está ya).</li>
+                    <li>No abandonar, maltratar ni ceder el animal a terceros sin aviso.</li>
+                    <li>Permitir visitas de seguimiento por parte de PetHouse.</li>
+                  </ul>
+                </div>
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="terms"
+                    [(ngModel)]="acceptedTerms"
+                  />
+                  <label class="form-check-label fw-bold" for="terms">
+                    Acepto los términos del Contrato de Adopción Responsable
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Botón -->
+          <button
+            class="btn-publish-cartoon w-100 py-3"
+            (click)="submitSolicitud()"
+            [disabled]="loading || success || !acceptedTerms"
+          >
+            {{ loading ? 'Procesando Solicitud...' : 'Confirmar y Enviar Solicitud Legal' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

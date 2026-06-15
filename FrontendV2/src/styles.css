@@ -1,1 +1,482 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;600;700;800&family=Caveat:wght@400;700&display=swap');
+
+/* ── Bootstrap ────────────────────────────────────── */
+@import 'bootstrap/dist/css/bootstrap.min.css';
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+
+.swal-cartoon-popup {
+  border-radius: 20px !important;
+  border: 3px solid var(--ink) !important;
+  box-shadow: 6px 6px 0 var(--ink) !important;
+  font-family: var(--font-display) !important;
+}
+
+.swal-btn-confirm {
+  background: var(--mustard) !important;
+  color: var(--ink) !important;
+  border: 2.5px solid var(--ink) !important;
+  border-radius: 50px !important;
+  padding: 10px 24px !important;
+  font-weight: 700 !important;
+  font-family: var(--font-display) !important;
+  box-shadow: 3px 3px 0 var(--ink) !important;
+  margin-right: 10px !important;
+}
+
+.swal-btn-cancel {
+  background: white !important;
+  color: var(--coral) !important;
+  border: 2.5px solid var(--ink) !important;
+  border-radius: 50px !important;
+  padding: 10px 24px !important;
+  font-weight: 700 !important;
+  font-family: var(--font-display) !important;
+  box-shadow: 3px 3px 0 var(--ink) !important;
+}
+
+:root {
+  /* Paleta principal — cálida y juguetona */
+  --cream: #fff8f0;
+  --cream-dark: #f5ecdf;
+  --mustard: #f5b731;
+  --mustard-dark: #d99e1b;
+  --coral: #ff6b6b;
+  --coral-dark: #e05555;
+  --teal: #2ec4b6;
+  --teal-dark: #1fa899;
+  --sky: #70c1e8;
+  --lavender: #b8a9e8;
+  --peach: #ffb59a;
+  --leaf: #8ccb76;
+  --charcoal: #2d2d2d;
+  --ink: #1a1a2e;
+  --warm-gray: #7a7572;
+  --light-gray: #e8e2da;
+
+  /* Tipografía */
+  --font-display: 'Baloo 2', cursive;
+  --font-body: 'Nunito', sans-serif;
+  --font-handwritten: 'Caveat', cursive;
+
+  /* Bordes cartoon */
+  --border-thick: 3px solid var(--ink);
+  --border-medium: 2.5px solid var(--ink);
+  --border-thin: 2px solid var(--ink);
+  --radius-blob: 20px;
+  --radius-pill: 50px;
+  --radius-circle: 50%;
+
+  /* Sombras "hand-drawn" */
+  --shadow-cartoon: 4px 4px 0px var(--ink);
+  --shadow-cartoon-sm: 3px 3px 0px var(--ink);
+  --shadow-cartoon-lg: 6px 6px 0px var(--ink);
+  --shadow-soft: 0 8px 30px rgba(0, 0, 0, 0.08);
+  --shadow-hover: 6px 6px 0px var(--ink);
+
+  /* Transiciones */
+  --bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --smooth: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --- Reset & Base --- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  background-color: var(--cream);
+  color: var(--charcoal);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+/* --- Navbar Cartoon --- */
+.navbar {
+  transition: all 0.4s var(--smooth);
+  padding: 12px 0;
+  z-index: 100;
+}
+
+.navbar-top {
+  background: var(--cream);
+}
+
+.navbar-scrolled {
+  background: var(--cream);
+  padding: 8px 0;
+  box-shadow: 0 4px 0 var(--ink);
+}
+
+.brand-logo {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--ink);
+  transition: all 0.3s var(--bounce);
+  position: relative;
+}
+
+.brand-logo:hover {
+  color: var(--coral);
+  transform: rotate(-3deg) scale(1.05);
+}
+
+/* Links nav */
+.nav-custom {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--ink);
+  margin-left: 8px;
+  padding: 6px 16px !important;
+  border-radius: var(--radius-pill);
+  transition: all 0.3s var(--bounce);
+  position: relative;
+}
+
+.nav-custom:hover {
+  color: var(--cream);
+  background: var(--coral);
+  transform: translateY(-2px) rotate(-1deg);
+  box-shadow: var(--shadow-cartoon-sm);
+  border: var(--border-thin);
+}
+
+.login-navbar {
+  background: var(--cream);
+  padding: 10px 0;
+  margin: 0;
+  box-shadow: none;
+}
+
+/* Botón login */
+.btn-login {
+  background: var(--mustard);
+  color: var(--ink);
+  padding: 8px 18px;
+  font-weight: 700;
+  border: var(--border-thick);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-cartoon-sm);
+  transition: all 0.25s var(--bounce);
+}
+
+.btn-login:hover {
+  background: var(--coral);
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-cartoon);
+}
+
+/* --- Hero Cartoon --- */
+.hero-section {
+  position: relative;
+  background-color: var(--cream);
+  background-image: none;
+  min-height: auto;
+  padding: 2rem 0 0 0;
+  overflow: hidden;
+}
+
+.hero-section .overlay {
+  display: none;
+}
+
+/* --- Modal Cartoon --- */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 26, 46, 0.5);
+  z-index: 1000;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 26, 46, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-card {
+  background: var(--cream);
+  border-radius: var(--radius-blob);
+  border: var(--border-thick);
+  width: 100%;
+  max-width: 850px;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: var(--shadow-cartoon-lg);
+  position: relative;
+}
+
+.modal-body {
+  display: flex;
+}
+
+.image-container {
+  flex: 1;
+}
+
+.image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.image-container img:hover {
+  transform: scale(1.05);
+}
+
+.info-container {
+  flex: 1;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.info-container h3 {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.info-container p {
+  font-family: var(--font-body);
+  color: var(--warm-gray);
+  margin-bottom: 0.4rem;
+}
+
+.info-container strong {
+  color: var(--ink);
+}
+
+.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  z-index: 10;
+  background: var(--coral);
+  border: var(--border-thin);
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-circle);
+  font-size: 1.4rem;
+  cursor: pointer;
+  color: white;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-cartoon-sm);
+  transition: all 0.2s var(--bounce);
+  line-height: 1;
+}
+
+.close-btn:hover {
+  background: var(--coral-dark);
+  transform: rotate(90deg) scale(1.1);
+}
+
+/* Status Badges Cartoon */
+.status-badge {
+  display: inline-block;
+  padding: 0.35rem 0.9rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-family: var(--font-display);
+  margin-bottom: 1rem;
+  border: var(--border-thin);
+  box-shadow: var(--shadow-cartoon-sm);
+  letter-spacing: 0.5px;
+}
+
+.status-badge.disponible {
+  background: #c8f7c5;
+  color: #1b5e20;
+}
+
+.status-badge.adoptado {
+  background: var(--light-gray);
+  color: var(--warm-gray);
+}
+
+.status-badge.reservado {
+  background: #fff0b3;
+  color: #8b6914;
+}
+
+.status-badge.no-disponible {
+  background: #ffcdd2;
+  color: #b71c1c;
+}
+
+/* Botón Adoptar Cartoon */
+.btn-adopt {
+  margin-top: 1.5rem;
+  padding: 0.9rem 1.5rem;
+  background: var(--teal);
+  color: white;
+  border: var(--border-thick);
+  border-radius: var(--radius-pill);
+  font-weight: 800;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: all 0.25s var(--bounce);
+  box-shadow: var(--shadow-cartoon);
+  letter-spacing: 0.5px;
+}
+
+.btn-adopt:hover {
+  transform: translateY(-4px) rotate(-1deg);
+  box-shadow: var(--shadow-cartoon-lg);
+  background: var(--teal-dark);
+}
+
+.btn-adopt:disabled {
+  background: var(--light-gray);
+  color: var(--warm-gray);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: var(--shadow-cartoon-sm);
+}
+
+@media (max-width: 768px) {
+  .modal-body {
+    flex-direction: column;
+  }
+
+  .image-container {
+    height: 250px;
+  }
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+@keyframes wiggle {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-3deg);
+  }
+  75% {
+    transform: rotate(3deg);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes bounce-in {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes squish {
+  0%,
+  100% {
+    transform: scaleX(1) scaleY(1);
+  }
+  50% {
+    transform: scaleX(1.05) scaleY(0.95);
+  }
+}
+
+/* Floating paw prints decoration */
+@keyframes paw-float {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.15;
+  }
+  50% {
+    transform: translateY(-20px) rotate(15deg);
+    opacity: 0.25;
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.15;
+  }
+}
+
+/* --- Utility classes --- */
+.font-hand {
+  font-family: var(--font-handwritten);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.text-coral {
+  color: var(--coral);
+}
+.text-teal {
+  color: var(--teal);
+}
+.text-mustard {
+  color: var(--mustard);
+}
+.text-ink {
+  color: var(--ink);
+}
+.bg-cream {
+  background-color: var(--cream);
+}
+.bg-cream-dark {
+  background-color: var(--cream-dark);
+}

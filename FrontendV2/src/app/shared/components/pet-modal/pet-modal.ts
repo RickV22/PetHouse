@@ -7,8 +7,8 @@ import { formatAge } from '../../utils/formatAge';
   selector: 'app-pet-modal',
   standalone: true,
   imports: [CommonModule, RouterModule],
-  templateUrl: './pet-modal.component.html',
-  styleUrls: ['./pet-modal.component.css'],
+  templateUrl: './pet-modal.html',
+  styleUrls: ['./pet-modal.css'],
 })
 export class PetModalComponent {
   @Input() selectedPet!: any;

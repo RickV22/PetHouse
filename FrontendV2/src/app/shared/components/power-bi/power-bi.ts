@@ -4,9 +4,11 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 
 @Component({
+  selector: 'app-powerbi-report',
   standalone: true,
-  imports: [CommonModule, RouterModule],
-  selector: 'app-power-bi',
+  imports: [CommonModule],
+  templateUrl: './power-bi.html', // 👈
+  styleUrls: ['./power-bi.css'],
 })
 export class PowerbiReportComponent {
   @Input() title = 'Power BI Report';

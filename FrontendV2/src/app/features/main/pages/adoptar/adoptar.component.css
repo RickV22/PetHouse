@@ -1,0 +1,77 @@
+.adopt-card {
+  background: white;
+  border: 3px solid var(--ink);
+  border-radius: 20px;
+  box-shadow: var(--shadow-cartoon-lg);
+  padding: 1rem;
+  margin-bottom: 2rem;
+}
+
+.card-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  background: var(--mustard);
+  color: var(--ink);
+  font-weight: 800;
+  font-size: 0.85rem;
+  border: var(--border-thin);
+  position: relative;
+  top: -10px;
+  margin-bottom: 0.4rem;
+}
+
+.card-head h4 {
+  font-family: var(--font-display);
+  margin: 0;
+}
+
+.cartoon-label {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.cartoon-input {
+  border: 2.5px solid var(--ink) !important;
+  border-radius: 12px !important;
+  padding: 8px;
+}
+
+.cartoon-input:focus {
+  box-shadow: 4px 4px 0 var(--ink) !important;
+  border-color: var(--coral) !important;
+}
+
+.legal-cartoon-box {
+  background: var(--cream);
+  border: 2.5px solid var(--ink);
+  border-radius: 12px;
+}
+
+.btn-publish-cartoon {
+  background: var(--mustard);
+  color: var(--ink);
+  font-weight: 800;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  border: 3px solid var(--ink);
+  border-radius: 20px;
+  box-shadow: 6px 6px 0 var(--ink);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
+}
+
+.btn-publish-cartoon:hover:not(:disabled) {
+  background: var(--coral);
+  color: white;
+  transform: translate(-3px, -3px);
+  box-shadow: var(--shadow-hover);
+}
+
+.btn-publish-cartoon:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

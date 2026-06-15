@@ -1,0 +1,142 @@
+<app-navbar />
+
+<!-- ===== HERO ===== -->
+<section class="hero-cartoon">
+  <div class="paw-pattern hero-paws"></div>
+
+  <div class="hero-blob hb-1"></div>
+  <div class="hero-blob hb-2"></div>
+  <div class="hero-blob hb-3"></div>
+
+  <div class="deco deco-paw deco-1">🐾</div>
+  <div class="deco deco-paw deco-2">🐾</div>
+  <div class="deco deco-heart deco-3">💛</div>
+  <div class="deco deco-star deco-4">⭐</div>
+  <div class="deco deco-paw deco-5">🐾</div>
+  <div class="deco deco-bone deco-6">🦴</div>
+
+  <div class="container">
+    <div class="hero-grid">
+      <div class="hero-text hero-text-anim">
+        <span class="hero-tag">🏠 Plataforma de adopción</span>
+        <h1 class="hero-title">
+          Encuentra a tu
+          <span class="highlight-coral">mejor amigo</span>
+          <span class="highlight-hand">para siempre</span>
+        </h1>
+        <p class="hero-subtitle">
+          Cada mascota merece un hogar lleno de amor. Descubre quién te está esperando. 🐶🐱
+        </p>
+
+        <div class="hero-stats">
+          <div class="stat-bubble">
+            <span class="stat-number">{{ pets.length }}</span>
+            <span class="stat-label">Mascotas</span>
+          </div>
+          <div class="stat-bubble">
+            <span class="stat-number">{{ adoptedCount }}</span>
+            <span class="stat-label">Adoptados</span>
+          </div>
+          <div class="stat-bubble">
+            <span class="stat-number">❤️</span>
+            <span class="stat-label">Mucho amor</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-illustration hero-illustration-anim">
+        <div class="illustration-frame">
+          <img src="/img/hero_pets_cartoon.png" alt="Mascotas felices esperando un hogar" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wave-separator">
+    <svg viewBox="0 0 1440 100" preserveAspectRatio="none">
+      <path
+        d="M0,40 C360,100 720,0 1080,60 C1260,90 1380,40 1440,50 L1440,100 L0,100 Z"
+        fill="var(--cream-dark)"
+      />
+    </svg>
+  </div>
+</section>
+
+<!-- ===== CATALOG ===== -->
+<section class="catalog-section">
+  <div class="pastel-blob pb-1"></div>
+  <div class="pastel-blob pb-2"></div>
+  <div class="pastel-blob pb-3"></div>
+  <div class="pastel-blob pb-4"></div>
+  <div class="pastel-blob pb-5"></div>
+  <div class="pastel-blob pb-6"></div>
+  <div class="paw-pattern"></div>
+
+  <div class="container catalog-content">
+    <div class="section-header">
+      <span class="section-tag">🐾 Catálogo</span>
+      <h2 class="section-title">Nuestras Mascotas</h2>
+      <p class="section-subtitle">Cada uno tiene una historia especial. ¿Cuál será la tuya?</p>
+      <div class="title-underline"></div>
+    </div>
+
+    <app-pet-search [(search)]="search" />
+
+    <div class="pets-grid">
+      <div
+        *ngFor="let pet of previewPets; let i = index"
+        class="pet-grid-item pet-card-anim"
+        [style.animation-delay]="i * 80 + 'ms'"
+      >
+        <app-pet-card [pet]="pet" (view)="openModal(pet)" />
+      </div>
+    </div>
+
+    <div *ngIf="filteredPets.length === 0" class="empty-state">
+      <span class="empty-emoji">🔍</span>
+      <h3>No encontramos mascotas</h3>
+      <p>Intenta con otro nombre o especie</p>
+    </div>
+
+    <div *ngIf="hasMore" class="see-more-wrap">
+      <a routerLink="/usuarios/mascotas" class="btn-see-more">
+        Ver todas las mascotas 🐾
+        <span class="see-more-count">+{{ extraCount }} más</span>
+      </a>
+    </div>
+
+    <app-pet-modal *ngIf="selectedPet" [selectedPet]="selectedPet" (closeModal)="closeModal()" />
+  </div>
+</section>
+
+<!-- ===== CTA ===== -->
+<section class="cta-section">
+  <div class="paw-pattern cta-paws"></div>
+  <div class="container cta-container">
+    <div class="cta-banner">
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+      <div class="blob blob-3"></div>
+      <div class="cta-inner">
+        <div class="cta-text">
+          <h3 class="cta-title">¿Tienes una mascota que <em>busca hogar</em>?</h3>
+          <p class="cta-subtitle">Publica gratis y llega a miles de familias en minutos.</p>
+        </div>
+        <a routerLink="/usuarios/publicar" class="btn-cta">
+          Publicar mascota <span class="cta-arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="cartoon-footer">
+  <div class="container">
+    <div class="footer-content">
+      <span class="footer-logo">🏠 PetHouse</span>
+      <p>Hecho con ❤️ para las mascotas del mundo</p>
+      <div class="footer-paws">🐾 🐾 🐾</div>
+    </div>
+  </div>
+</footer>

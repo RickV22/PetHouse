@@ -1,0 +1,39 @@
+.dashboard-container {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.icon-circle {
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 1.2rem;
+}
+
+.analytics-card {
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.report-wrapper {
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Anula el margen que agrega el PowerbiReportComponent */
+.report-wrapper ::ng-deep .card {
+  margin-top: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+.bg-primary-subtle {
+  background-color: #e7f0ff;
+}
+.bg-warning-subtle {
+  background-color: #fff8e1;
+}

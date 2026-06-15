@@ -9,8 +9,8 @@ import Swal from 'sweetalert2';
   selector: 'app-admin-navbar',
   standalone: true,
   imports: [CommonModule, RouterModule],
-  templateUrl: './admin-navbar.component.html',
-  styleUrls: ['./admin-navbar.component.css'],
+  templateUrl: './admin-navbar.html',
+  styleUrls: ['./admin-navbar.css'],
 })
 export class AdminNavbarComponent {
   constructor(

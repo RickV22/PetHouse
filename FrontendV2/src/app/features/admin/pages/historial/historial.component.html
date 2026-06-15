@@ -1,0 +1,196 @@
+<app-admin-navbar />
+
+<main class="history-page py-5">
+  <div class="container">
+    <!-- Header -->
+    <header
+      class="d-flex flex-column flex-md-row justify-content-between align-items-end mb-4 gap-3"
+    >
+      <div>
+        <span class="history-badge mb-2">📋 Auditoría General</span>
+        <h1 class="fw-bold display-6 mb-0">Historial de Actividad</h1>
+        <p class="text-muted">Monitorea cada cambio y acción realizada en el sistema.</p>
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn btn-export shadow-sm" (click)="exportToCSV()">
+          <i class="bi bi-download me-2"></i> Exportar CSV
+        </button>
+      </div>
+    </header>
+
+    <!-- Filtros -->
+    <div class="card filter-card mb-4 p-4 shadow-sm">
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="cartoon-label">Acción</label>
+          <select class="form-select cartoon-input" [(ngModel)]="filterAction">
+            <option value="">Todas las acciones</option>
+            <option value="create">Crear</option>
+            <option value="update">Actualizar</option>
+            <option value="delete">Eliminar</option>
+            <option value="login">Inicio Sesión</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="cartoon-label">Recurso</label>
+          <select class="form-select cartoon-input" [(ngModel)]="filterResource">
+            <option value="">Todos los recursos</option>
+            <option value="user">Usuarios</option>
+            <option value="pet">Mascotas</option>
+            <option value="adoption">Adopciones</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="cartoon-label">Rango de Fechas</label>
+          <div class="input-group">
+            <input type="date" class="form-control cartoon-input" [(ngModel)]="startDate" />
+            <span class="input-group-text bg-transparent border-0">al</span>
+            <input type="date" class="form-control cartoon-input" [(ngModel)]="endDate" />
+          </div>
+        </div>
+        <div class="col-md-2 d-flex align-items-end gap-2">
+          <button class="btn btn-search w-100" (click)="fetchAuditLogs()">
+            <i class="bi bi-search"></i>
+          </button>
+          <button class="btn btn-outline-secondary rounded-pill" (click)="resetFilters()">
+            <i class="bi bi-arrow-counterclockwise"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Búsqueda rápida -->
+    <div class="search-box mb-4">
+      <input
+        type="text"
+        class="form-control form-control-lg cartoon-input ps-4"
+        placeholder="🔍 Buscar por detalles, recurso o usuario..."
+        [(ngModel)]="searchTerm"
+        (input)="applySearch()"
+      />
+    </div>
+
+    <!-- Tabla -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-ink text-white">
+            <tr>
+              <th class="ps-4">Usuario</th>
+              <th>Acción</th>
+              <th>Recurso</th>
+              <th>Fecha y Hora</th>
+              <th>Estado</th>
+              <th class="text-center pe-4">Detalle</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Loading -->
+            <tr *ngIf="loading">
+              <td colspan="6" class="text-center py-5">
+                <div class="spinner-border text-warning" role="status"></div>
+                <p class="mt-2 fw-bold">Cargando bitácora...</p>
+              </td>
+            </tr>
+
+            <!-- Empty -->
+            <tr *ngIf="!loading && filteredLogs.length === 0">
+              <td colspan="6" class="text-center py-5 text-muted">
+                <i class="bi bi-journal-x display-4 d-block mb-3 opacity-20"></i>
+                No se encontraron registros con esos filtros.
+              </td>
+            </tr>
+
+            <!-- Rows -->
+            <tr *ngFor="let log of filteredLogs" class="log-row">
+              <td class="ps-4">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="user-avatar-small">{{ log.user_id ? 'U' : 'S' }}</div>
+                  <div>
+                    <div class="fw-bold small">
+                      {{ log.user_name || (log.user_id ? 'Usuario #' + log.user_id : 'Sistema') }}
+                    </div>
+                    <div class="text-muted x-small">{{ log.ip_address || 'Sin IP' }}</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="badge-cartoon" [ngClass]="getActionBadge(log.action).class">
+                  <i class="bi me-1" [ngClass]="getActionBadge(log.action).icon"></i>
+                  {{ getActionBadge(log.action).label }}
+                </span>
+              </td>
+              <td>
+                <span class="fw-bold text-dark">{{ log.resource }}</span>
+                <span class="text-muted small">#{{ log.resource_id || '-' }}</span>
+              </td>
+              <td class="text-muted small">{{ formatDate(log.timestamp) }}</td>
+              <td>
+                <span *ngIf="log.status === 'success'" class="text-success small fw-bold">
+                  <i class="bi bi-check-circle-fill"></i> Ok
+                </span>
+                <span *ngIf="log.status !== 'success'" class="text-danger small fw-bold">
+                  <i class="bi bi-x-circle-fill"></i> Error
+                </span>
+              </td>
+              <td class="text-center pe-4">
+                <button class="btn btn-detail-circle" (click)="viewDetails(log)">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Modal Detalle -->
+<ng-container *ngIf="showDetailModal && selectedLog">
+  <div class="modal d-block" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content cartoon-modal">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="fw-bold mb-0">Detalle del Registro #{{ selectedLog.id }}</h5>
+          <button type="button" class="btn-close" (click)="closeModal()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-4">
+            <div class="col-md-6">
+              <div class="detail-item p-3 rounded-4">
+                <label class="x-small text-muted text-uppercase fw-bold">Actor</label>
+                <div class="fw-bold">
+                  {{
+                    selectedLog.user_name ||
+                      (selectedLog.user_id
+                        ? 'Usuario ID #' + selectedLog.user_id
+                        : 'Proceso del Sistema')
+                  }}
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="detail-item p-3 rounded-4">
+                <label class="x-small text-muted text-uppercase fw-bold">Fecha Exacta</label>
+                <div class="fw-bold">{{ formatDate(selectedLog.timestamp) }}</div>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="detail-item p-3 rounded-4">
+                <label class="x-small text-muted text-uppercase fw-bold">Cambios / Datos</label>
+                <pre class="changes-pre mt-2">{{ getDetailsJson(selectedLog) }}</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-0">
+          <button class="btn btn-ink text-white px-4 rounded-pill" (click)="closeModal()">
+            Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-backdrop fade show"></div>
+</ng-container>

@@ -1,0 +1,134 @@
+<app-navbar />
+
+<main class="publish-page py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="publish-card p-4 p-md-5">
+          <div class="text-center mb-4">
+            <span class="publish-badge mb-2">🐾 Nueva Publicación</span>
+            <h1 class="fw-bold display-6">Dar en Adopción</h1>
+            <p class="text-muted">Ayúdanos a encontrarle el hogar que se merece</p>
+          </div>
+
+          <div class="row g-4">
+            <!-- Imagen -->
+            <div class="col-md-5 order-md-2">
+              <div class="image-upload-wrapper" [class.has-preview]="preview">
+                <ng-container *ngIf="preview; else uploadLabel">
+                  <img [src]="preview" alt="Vista previa" class="preview-img" />
+                  <button class="btn btn-sm btn-danger remove-img" (click)="removeImage()">
+                    <i class="bi bi-x"></i>
+                  </button>
+                </ng-container>
+                <ng-template #uploadLabel>
+                  <label class="upload-label">
+                    <i class="bi bi-camera-fill display-4 mb-2"></i>
+                    <span class="small fw-bold">Subir Foto</span>
+                    <input
+                      type="file"
+                      class="d-none"
+                      accept="image/*"
+                      (change)="handleImage($event)"
+                    />
+                  </label>
+                </ng-template>
+              </div>
+            </div>
+
+            <!-- Datos -->
+            <div class="col-md-7 order-md-1">
+              <div class="row g-3">
+                <div class="col-12">
+                  <label class="form-label cartoon-label">Nombre de la Mascota *</label>
+                  <input
+                    class="form-control cartoon-input"
+                    [(ngModel)]="name"
+                    placeholder="Ej: Bobby"
+                  />
+                </div>
+
+                <div class="col-6">
+                  <label class="form-label cartoon-label">Especie *</label>
+                  <select class="form-select cartoon-input" [(ngModel)]="species">
+                    <option value="">Elegir...</option>
+                    <option value="perro">🐶 Perro</option>
+                    <option value="gato">🐱 Gato</option>
+                  </select>
+                </div>
+
+                <div class="col-6">
+                  <label class="form-label cartoon-label">Género</label>
+                  <select class="form-select cartoon-input" [(ngModel)]="gender">
+                    <option value="">Elegir...</option>
+                    <option value="macho">Macho</option>
+                    <option value="hembra">Hembra</option>
+                  </select>
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label cartoon-label">Raza (opcional)</label>
+                  <input
+                    class="form-control cartoon-input"
+                    [(ngModel)]="race"
+                    placeholder="Ej: Golden Retriever"
+                  />
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label cartoon-label">Fecha Nacimiento (aprox)</label>
+                  <input type="date" class="form-control cartoon-input" [(ngModel)]="birth_date" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Descripción -->
+            <div class="col-12 order-3">
+              <label class="form-label cartoon-label">Cuéntanos sobre su personalidad</label>
+              <textarea
+                class="form-control cartoon-input"
+                rows="4"
+                [(ngModel)]="description"
+                placeholder="Es muy juguetón, le gustan los niños..."
+              ></textarea>
+            </div>
+
+            <!-- Legal + Submit -->
+            <div class="col-12 order-4">
+              <div class="legal-cartoon-box p-3 mb-3">
+                <h6 class="fw-bold text-coral d-flex align-items-center gap-2">
+                  <i class="bi bi-shield-lock-fill"></i> Compromiso de Bienestar
+                </h6>
+                <p class="small text-muted mb-3 lh-sm">
+                  Certifico que esta información es verídica. Me comprometo a entregar a la mascota
+                  personalmente en la sede de PetHouse para validar su estado de salud.
+                </p>
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="termsCheck"
+                    [(ngModel)]="acceptedTerms"
+                  />
+                  <label class="form-check-label fw-bold small" for="termsCheck">
+                    Acepto los términos y el proceso de entrega física.
+                  </label>
+                </div>
+              </div>
+
+              <button
+                class="btn btn-publish-cartoon w-100 py-3"
+                (click)="publishPet()"
+                [disabled]="isSubmitting"
+              >
+                <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
+                <i *ngIf="!isSubmitting" class="bi bi-send-fill me-2"></i>
+                {{ isSubmitting ? 'Publicando...' : 'Enviar Publicación' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SearchBar } from './search-bar';
+import { PetSearchComponent } from './search-bar';
 
-describe('SearchBar', () => {
-  let component: SearchBar;
-  let fixture: ComponentFixture<SearchBar>;
+describe('PetSearchComponent', () => {
+  let component: PetSearchComponent;
+  let fixture: ComponentFixture<PetSearchComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SearchBar],
+      imports: [PetSearchComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(SearchBar);
+    fixture = TestBed.createComponent(PetSearchComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

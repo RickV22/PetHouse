@@ -5,9 +5,9 @@ import { Router, RouterModule } from '@angular/router';
 @Component({
   selector: 'app-pet-search',
   standalone: true,
-  imports: [CommonModule, RouterModule],
-  templateUrl: './pet-search.component.html',
-  styleUrls: ['./pet-search.component.css'],
+  imports: [CommonModule],
+  templateUrl: './search-bar.html',
+  styleUrls: ['./search-bar.css'],
 })
 export class PetSearchComponent {
   @Input() search = '';
