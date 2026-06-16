@@ -129,6 +129,25 @@
         </div>
       </div>
 
+      <!-- ── BOTONES DE PRUEBA (ELIMINAR EN PRODUCCIÓN) ── -->
+      <div *ngIf="!isRegister" class="d-flex gap-2 mb-2 mt-3">
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-warning w-50"
+          (click)="fillTestCredentials('admin')"
+        >
+          🛡️ Admin test
+        </button>
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-info w-50"
+          (click)="fillTestCredentials('usuario')"
+        >
+          👤 Usuario test
+        </button>
+      </div>
+      <!-- ── FIN BOTONES DE PRUEBA ── -->
+
       <!-- Submit -->
       <button
         class="btn-login py-2 mt-3"

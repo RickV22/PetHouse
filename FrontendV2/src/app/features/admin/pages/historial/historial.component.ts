@@ -65,7 +65,7 @@ export class AdminHistorialComponent implements OnInit {
       try {
         const users = await this.auditService.getUsers();
         const userMap: Record<number, string> = {};
-        users.forEach((u) => {
+        users.forEach((u: any) => {
           userMap[u.id] = `${u.name} ${u.last_name || ''}`.trim();
         });
         this.auditLogs = this.auditLogs.map((l) => ({

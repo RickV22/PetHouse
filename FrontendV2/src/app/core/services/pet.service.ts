@@ -37,4 +37,31 @@ export class PetService {
       }),
     );
   }
+  async getAllPets(): Promise<any[]> {
+    const token = localStorage.getItem('token');
+    const data = await firstValueFrom(
+      this.http.get<any>(`${this.apiUrl}/pets`, {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+    );
+    return data?.data ?? data;
+  }
+
+  async updatePet(id: number, data: any): Promise<any> {
+    const token = localStorage.getItem('token');
+    return firstValueFrom(
+      this.http.put(`${this.apiUrl}/pets/${id}`, data, {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+    );
+  }
+
+  async deletePet(id: number): Promise<any> {
+    const token = localStorage.getItem('token');
+    return firstValueFrom(
+      this.http.delete(`${this.apiUrl}/pets/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+    );
+  }
 }

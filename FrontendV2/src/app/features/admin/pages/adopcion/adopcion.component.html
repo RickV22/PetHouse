@@ -1,0 +1,63 @@
+<app-admin-navbar />
+
+<section class="container my-4">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Solicitudes de Adopción</h2>
+    <div class="d-flex align-items-center gap-2">
+      <span class="text-muted small">Ordenar por:</span>
+      <select
+        class="form-select form-select-sm w-auto"
+        [(ngModel)]="sortOrder"
+        (change)="renderGrid()"
+      >
+        <option value="recent">Más recientes</option>
+        <option value="alphabetical">Mascota (A-Z)</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Tarjetas resumen -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <div class="card text-bg-secondary text-center p-3">
+        <div class="fs-2 fw-bold">{{ totalCount }}</div>
+        <div>Total</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-bg-warning text-center p-3">
+        <div class="fs-2 fw-bold">{{ pendingCount }}</div>
+        <div>Pendientes</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-bg-success text-center p-3">
+        <div class="fs-2 fw-bold">{{ approvedCount }}</div>
+        <div>Aprobadas</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-bg-danger text-center p-3">
+        <div class="fs-2 fw-bold">{{ rejectedCount }}</div>
+        <div>Rechazadas</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="mb-3">
+    <button
+      *ngFor="let f of filters"
+      class="btn me-2"
+      [class.btn-dark]="activeFilter === f"
+      [class.btn-outline-secondary]="activeFilter !== f"
+      (click)="setFilter(f)"
+    >
+      {{ f }}
+    </button>
+  </div>
+
+  <!-- Tabla -->
+  <div id="adoption-table-wrapper"></div>
+</section>

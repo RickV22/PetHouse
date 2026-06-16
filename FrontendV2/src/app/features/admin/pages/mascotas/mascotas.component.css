@@ -1,0 +1,27 @@
+@import 'gridjs/dist/theme/mermaid.css';
+
+.admin-pets-page {
+  background: #f8f9fa;
+  min-height: 100vh;
+}
+
+:host ::ng-deep .gridjs-container {
+  border-radius: 0 !important;
+  padding: 0 !important;
+}
+:host ::ng-deep .gridjs-wrapper {
+  border: none !important;
+  box-shadow: none !important;
+}
+:host ::ng-deep .gridjs-th {
+  background-color: #f8f9fa !important;
+  color: #495057 !important;
+  text-transform: uppercase !important;
+  font-size: 0.75rem !important;
+  letter-spacing: 1px !important;
+  padding: 15px !important;
+}
+:host ::ng-deep .gridjs-td {
+  padding: 15px !important;
+  vertical-align: middle !important;
+}

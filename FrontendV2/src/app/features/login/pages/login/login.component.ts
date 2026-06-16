@@ -205,4 +205,15 @@ export class LoginComponent implements OnInit {
     this.isRegister = !this.isRegister;
     this.passwordError = '';
   }
+
+  //Pruebar con credenciales predefinidas para facilitar el testing
+  readonly testCredentials = {
+    admin: { email: 'admin@pethouse.com', password: 'Admin123!' },
+    usuario: { email: 'usuario@pethouse.com', password: 'Usuario123!' },
+  };
+
+  fillTestCredentials(role: 'admin' | 'usuario'): void {
+    this.email = this.testCredentials[role].email;
+    this.password = this.testCredentials[role].password;
+  }
 }

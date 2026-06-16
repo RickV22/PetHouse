@@ -17,9 +17,7 @@ export class PowerbiReportComponent {
 
   safeSrc: SafeResourceUrl = '';
 
-  @Input() set src(url: string) {
-    this.safeSrc = this.sanitizer.bypassSecurityTrustResourceUrl(url);
-  }
+  @Input() src: string | SafeResourceUrl = '';
 
   constructor(private sanitizer: DomSanitizer) {}
 }

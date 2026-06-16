@@ -2,6 +2,11 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import Swal from 'sweetalert2';
 
+// ── MODO PRUEBAS: comenta esto y descomenta el bloque de abajo ──
+export const authGuard: CanActivateFn = () => true;
+
+// ── PRODUCCIÓN: descomenta esto cuando el backend esté disponible ──
+/*
 export const authGuard: CanActivateFn = async (route, state) => {
   const router = inject(Router);
   const token = localStorage.getItem('token');
@@ -37,3 +42,4 @@ export const authGuard: CanActivateFn = async (route, state) => {
     return false;
   }
 };
+*/

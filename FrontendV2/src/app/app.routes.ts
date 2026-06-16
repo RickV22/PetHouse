@@ -10,6 +10,7 @@ import { AdminUsuariosComponent } from './features/admin/pages/usuarios/usuarios
 import { AdminDashboardComponent } from './features/admin/pages/dashboard/dashboard.component';
 import { AdminHistorialComponent } from './features/admin/pages/historial/historial.component';
 import { AdminMascotasComponent } from './features/admin/pages/mascotas/mascotas.component';
+import { AdminAdopcionComponent } from './features/admin/pages/adopcion/adopcion.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -24,6 +25,7 @@ export const routes: Routes = [
       { path: '', component: AdminUsuariosComponent },
       { path: 'dashboard', component: AdminDashboardComponent },
       { path: 'mascotas', component: AdminMascotasComponent },
+      { path: 'adopcion', component: AdminAdopcionComponent },
       { path: 'historial', component: AdminHistorialComponent },
     ],
   },
