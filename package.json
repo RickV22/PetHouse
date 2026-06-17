@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "gridjs": "^6.2.0",
+    "gridjs-svelte": "^2.1.1"
+  }
+}
