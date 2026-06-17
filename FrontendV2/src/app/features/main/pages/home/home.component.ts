@@ -45,7 +45,56 @@ export class HomeComponent implements OnInit {
   }
 
   loadPets(): void {
-    // this.petService.getPets().subscribe(pets => this.pets = pets);
+    // ── DATOS DE PRUEBA (eliminar cuando el backend esté disponible) ──
+    this.pets = [
+      {
+        id: 1,
+        name: 'Bobby',
+        species: 'perro',
+        race: 'Golden Retriever',
+        gender: 'macho',
+        birth_date: '2022-03-15',
+        status: 'AVAILABLE',
+        description: 'Muy juguetón, le encanta correr en el parque y es excelente con los niños.',
+        image_url: 'https://images.unsplash.com/photo-1633722715463-d30f4f325e24?w=400',
+      },
+      {
+        id: 2,
+        name: 'Misu',
+        species: 'gato',
+        race: 'Siamés',
+        gender: 'hembra',
+        birth_date: '2023-06-10',
+        status: 'AVAILABLE',
+        description: 'Tranquila y cariñosa, perfecta para apartamentos.',
+        image_url: 'https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=400',
+      },
+      {
+        id: 3,
+        name: 'Rocky',
+        species: 'perro',
+        race: 'Bulldog Francés',
+        gender: 'macho',
+        birth_date: '2021-11-20',
+        status: 'ADOPTED',
+        description: 'Activo y leal, ya encontró su hogar para siempre.',
+        image_url: 'https://images.unsplash.com/photo-1583512603805-3cc6b41f3edb?w=400',
+      },
+      {
+        id: 4,
+        name: 'Luna',
+        species: 'gato',
+        race: 'Persa',
+        gender: 'hembra',
+        birth_date: '2023-01-05',
+        status: 'RESERVED',
+        description: 'Curiosa y elegante, le gusta dormir en lugares cálidos.',
+        image_url: 'https://images.unsplash.com/photo-1574158622682-e40e69881006?w=400',
+      },
+    ];
+
+    // ── BACKEND REAL: descomentar cuando esté disponible ──
+    // this.petService.getAvailablePets().then(pets => this.pets = pets);
   }
 
   get filteredPets(): any[] {

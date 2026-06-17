@@ -104,8 +104,6 @@
         <span class="see-more-count">+{{ extraCount }} más</span>
       </a>
     </div>
-
-    <app-pet-modal *ngIf="selectedPet" [selectedPet]="selectedPet" (closeModal)="closeModal()" />
   </div>
 </section>
 
@@ -140,3 +138,6 @@
     </div>
   </div>
 </footer>
+
+<!-- Modal fuera de cualquier section con position/z-index propio -->
+<app-pet-modal *ngIf="selectedPet" [selectedPet]="selectedPet" (closeModal)="closeModal()" />

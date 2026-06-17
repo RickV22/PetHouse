@@ -75,7 +75,7 @@ export class PetModalComponent {
 
   handleAdopt(): void {
     localStorage.setItem('selectedPet', JSON.stringify(this.selectedPet));
-    this.router.navigate(['/usuarios/adoptar'], {
+    this.router.navigate(['/adoptar'], {
       queryParams: { pet_id: this.selectedPet.id },
     });
     setTimeout(() => this.close(), 50);
