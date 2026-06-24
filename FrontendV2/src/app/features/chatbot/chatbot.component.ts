@@ -2,14 +2,14 @@ import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-import { ChatService } from '../../core/services/chat';
+import { ChatService } from '../../core/services/chat.service';
 
 @Component({
   selector: 'app-chatbot',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './chatbot.html',
-  styleUrls: ['./chatbot.css'],
+  templateUrl: './chatbot.component.html',
+  styleUrls: ['./chatbot.component.css'],
 })
 export class ChatbotComponent {
   abierto = false;

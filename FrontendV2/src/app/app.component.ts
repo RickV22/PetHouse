@@ -1,20 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
-import { ChatbotComponent } from './shared/chatbot/chatbot';
+import { ChatbotComponent } from './features/chatbot/chatbot.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [
-    RouterOutlet,
-    ChatbotComponent
-  ],
+  imports: [RouterOutlet, ChatbotComponent],
   templateUrl: './app.component.html',
-  styleUrls: ['./app.css']
+  styleUrls: ['./app.css'],
 })
 export class AppComponent {
-  title = 'PetHouse';
+  protected readonly title = signal('PetHouse');
 }
-
-
