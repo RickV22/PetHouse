@@ -1,0 +1,307 @@
+<app-navbar />
+
+<!-- ══════════════════════════════════════════════════════════════════════ HERO -->
+<section class="vet-hero">
+  <div class="paw-pattern hero-paws"></div>
+  <div class="hero-blob hb-1"></div>
+  <div class="hero-blob hb-2"></div>
+  <div class="hero-blob hb-3"></div>
+  <div class="deco d-1">🐾</div>
+  <div class="deco d-2">🩺</div>
+  <div class="deco d-3">💊</div>
+  <div class="deco d-4">🐾</div>
+  <div class="deco d-5">💉</div>
+  <div class="deco d-6">❤️</div>
+
+  <div class="container position-relative z-2">
+    <div class="hero-inner">
+      <div class="hero-text hero-anim-left">
+        <span class="hero-tag">🩺 Módulo de Salud</span>
+        <h1 class="hero-title">
+          Agente Veterinario
+          <span class="highlight-coral">Virtual</span>
+          <span class="highlight-hand">para tu mascota 🐾</span>
+        </h1>
+        <p class="hero-subtitle">
+          Historial, recordatorios y carnet digital de salud en un solo lugar. Tu veterinario
+          inteligente, siempre disponible.
+        </p>
+        <button class="btn-open-agent" (click)="openAgent()">
+          <span class="agent-btn-icon">🤖</span>
+          Consultar Agente IA
+          <span class="btn-arrow">→</span>
+        </button>
+      </div>
+
+      <div class="hero-pet-preview hero-anim-right">
+        <div class="pet-preview-frame">
+          <img [src]="mockPet.photo" [alt]="mockPet.name" />
+          <div class="pet-preview-badge">
+            <span class="badge-name">{{ mockPet.name }}</span>
+            <span class="badge-species">{{ mockPet.species }} · {{ mockPet.breed }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wave-separator">
+    <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
+      <path
+        d="M0,30 C360,80 720,0 1080,50 C1260,70 1380,30 1440,40 L1440,80 L0,80 Z"
+        fill="var(--cream-dark)"
+      />
+    </svg>
+  </div>
+</section>
+
+<!-- NOTIFICACIONES -->
+<div *ngIf="user && urgentCount > 0" class="notif-bar">
+  <div class="container">
+    <div class="notif-inner">
+      <span class="notif-lead">
+        <span class="notif-dot urgent"></span>
+        <strong
+          >{{ urgentCount }} recordatorio{{ urgentCount > 1 ? 's' : '' }} urgente{{
+            urgentCount > 1 ? 's' : ''
+          }}</strong
+        >
+        para Luna
+      </span>
+      <div class="notif-list">
+        <span
+          *ngFor="let n of notifications"
+          class="notif-chip"
+          [class.notif-urgent]="n.urgency === 'urgent'"
+        >
+          {{ n.icon }} {{ n.message }}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--CONTENIDO PRINCIPAL -->
+<section class="vet-content">
+  <div class="pastel-blob pb-1"></div>
+  <div class="pastel-blob pb-2"></div>
+  <div class="pastel-blob pb-3"></div>
+  <div class="pastel-blob pb-4"></div>
+  <div class="paw-pattern"></div>
+
+  <div class="container position-relative z-2">
+    <div class="row g-4 g-xl-5">
+      <!-- ── COLUMNA IZQUIERDA: Perfil + Carnet ── -->
+      <div class="col-lg-4">
+        <!-- Tarjeta de perfil -->
+        <div class="vet-card profile-card card-anim" style="animation-delay: 0ms">
+          <div class="profile-photo-wrap">
+            <img [src]="mockPet.photo" [alt]="mockPet.name" class="profile-photo" />
+            <span class="profile-species-badge">{{ mockPet.species }}</span>
+          </div>
+          <div class="profile-info">
+            <h2 class="profile-name">{{ mockPet.name }}</h2>
+            <p class="profile-breed">{{ mockPet.breed }}</p>
+            <div class="profile-pills">
+              <span class="info-pill pill-coral">
+                <i class="bi bi-gender-ambiguous"></i> {{ mockPet.sex }}
+              </span>
+              <span class="info-pill pill-teal">
+                <i class="bi bi-calendar-heart"></i> {{ mockPet.age }} años
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Carnet digital de salud -->
+        <div class="vet-card carnet-card card-anim" style="animation-delay: 80ms">
+          <div class="card-header-section">
+            <span class="section-tag-sm">🏥 Carnet Digital</span>
+            <h3 class="card-title">Ficha de Salud</h3>
+          </div>
+
+          <div class="carnet-row">
+            <span class="carnet-label">Grupo sanguíneo</span>
+            <span class="carnet-value blood-badge">🩸 {{ mockPet.bloodType }}</span>
+          </div>
+
+          <div class="carnet-row">
+            <span class="carnet-label">Alergias</span>
+            <div class="tag-group">
+              <span *ngFor="let a of mockPet.allergies" class="tag tag-coral">{{ a }}</span>
+            </div>
+          </div>
+
+          <div class="carnet-row">
+            <span class="carnet-label">Condiciones</span>
+            <div class="tag-group">
+              <span *ngFor="let c of mockPet.conditions" class="tag tag-teal">{{ c }}</span>
+            </div>
+          </div>
+
+          <div class="carnet-observations">
+            <span class="carnet-label">Observaciones</span>
+            <p class="observations-text">{{ mockPet.observations }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── COLUMNA DERECHA: Cuidados + Historial ── -->
+      <div class="col-lg-8">
+        <!-- Próximos cuidados -->
+        <div class="section-header-row">
+          <div>
+            <span class="section-tag">🗓️ Próximos Cuidados</span>
+            <h2 class="section-title-sm">Recordatorios de Luna</h2>
+            <div class="title-underline"></div>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-5">
+          <div *ngFor="let care of upcomingCare; let i = index" class="col-sm-6 col-xl-4">
+            <div
+              class="care-card card-anim"
+              [class]="care.colorClass"
+              [style.animation-delay]="i * 60 + 'ms'"
+            >
+              <div class="care-icon">{{ care.icon }}</div>
+              <div class="care-body">
+                <div class="care-type">{{ care.type }}</div>
+                <div class="care-desc">{{ care.description }}</div>
+                <div class="care-date">
+                  <i class="bi bi-calendar3"></i> {{ formatDate(care.date) }}
+                </div>
+              </div>
+              <span
+                class="care-status-badge"
+                [class.badge-urgent]="care.status === 'urgent'"
+                [class.badge-pending]="care.status === 'pending'"
+                [class.badge-ok]="care.status === 'ok'"
+              >
+                <ng-container [ngSwitch]="care.status">
+                  <ng-container *ngSwitchCase="'urgent'">⚠️ Urgente</ng-container>
+                  <ng-container *ngSwitchCase="'pending'">🕒 Próximo</ng-container>
+                  <ng-container *ngSwitchCase="'ok'">✅ Al día</ng-container>
+                </ng-container>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Historial de cuidados -->
+        <div class="section-header-row">
+          <div>
+            <span class="section-tag">📋 Historial</span>
+            <h2 class="section-title-sm">Cuidados Realizados</h2>
+            <div class="title-underline"></div>
+          </div>
+        </div>
+
+        <div class="timeline">
+          <div
+            *ngFor="let record of careHistory; let i = index; let last = last"
+            class="timeline-item card-anim"
+            [style.animation-delay]="i * 80 + 'ms'"
+          >
+            <div class="timeline-line" *ngIf="!last"></div>
+            <div class="timeline-dot">{{ record.icon }}</div>
+            <div class="timeline-content vet-card">
+              <div class="timeline-meta">
+                <span class="timeline-type">{{ record.type }}</span>
+                <span class="timeline-date">
+                  <i class="bi bi-calendar-check"></i> {{ formatDate(record.date) }}
+                </span>
+              </div>
+              <p class="timeline-notes">{{ record.notes }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="cartoon-footer">
+  <div class="container">
+    <div class="footer-content">
+      <span class="footer-logo">🏠 PetHouse</span>
+      <p>Hecho con ❤️ para las mascotas del mundo</p>
+      <div class="footer-paws">🐾 🐾 🐾</div>
+    </div>
+  </div>
+</footer>
+
+<!-- BOTÓN FLOTANTE AGENTE -->
+<button class="agent-fab" (click)="openAgent()" title="Abrir Agente Veterinario IA">
+  <span class="fab-icon">🤖</span>
+  <span class="fab-label">Agente IA</span>
+</button>
+
+<!-- MODAL -->
+<div *ngIf="agentOpen" class="modal-overlay" (click)="closeAgent()">
+  <div class="agent-modal" (click)="$event.stopPropagation()">
+    <!-- Header del modal -->
+    <div class="agent-header">
+      <div class="agent-avatar">🤖</div>
+      <div class="agent-header-info">
+        <div class="agent-name">Agente Veterinario IA</div>
+        <div class="agent-status">
+          <span class="status-dot"></span>
+          <span>En línea · PetHouse IA</span>
+        </div>
+      </div>
+      <button class="agent-close" (click)="closeAgent()" title="Cerrar">✕</button>
+    </div>
+
+    <!-- Contexto de mascota -->
+    <div class="agent-pet-ctx">
+      <img [src]="mockPet.photo" [alt]="mockPet.name" class="ctx-photo" />
+      <div>
+        <strong>{{ mockPet.name }}</strong>
+        <span class="ctx-species"
+          >{{ mockPet.species }} · {{ mockPet.breed }} · {{ mockPet.age }} años</span
+        >
+      </div>
+    </div>
+
+    <!-- Mensajes -->
+    <div class="agent-messages">
+      <div
+        *ngFor="let msg of chatMessages"
+        class="chat-msg"
+        [class.msg-user]="msg.type === 'user'"
+        [class.msg-bot]="msg.type === 'bot'"
+      >
+        {{ msg.text }}
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div class="agent-footer">
+      <textarea
+        class="agent-input"
+        [(ngModel)]="chatInput"
+        (keyup.enter)="sendMessage()"
+        placeholder="Escribe tu consulta veterinaria..."
+        rows="1"
+      ></textarea>
+      <button class="agent-send" (click)="sendMessage()" title="Enviar">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="22" y1="2" x2="11" y2="13" />
+          <polygon points="22 2 15 22 11 13 2 9 22 2" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>

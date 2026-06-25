@@ -5,6 +5,7 @@ import { AdoptarComponent } from './features/main/pages/adoptar/adoptar.componen
 import { authGuard } from './core/guards/auth.guard';
 import { LoginComponent } from './features/login/pages/login/login.component';
 import { MascotasComponent } from './features/main/pages/mascotas/mascotas.component';
+import { VeterinarioComponent } from './features/main/pages/veterinario/veterinario.component';
 import { adminGuard } from './core/guards/admin.guard';
 import { AdminUsuariosComponent } from './features/admin/pages/usuarios/usuarios.component';
 import { AdminDashboardComponent } from './features/admin/pages/dashboard/dashboard.component';
@@ -15,6 +16,7 @@ import { AdminAdopcionComponent } from './features/admin/pages/adopcion/adopcion
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'mascotas', component: MascotasComponent },
+  { path: 'veterinario', component: VeterinarioComponent },
   { path: 'publicar', component: PublicarComponent, canActivate: [authGuard] },
   { path: 'adoptar', component: AdoptarComponent, canActivate: [authGuard] },
   { path: 'login', component: LoginComponent },
