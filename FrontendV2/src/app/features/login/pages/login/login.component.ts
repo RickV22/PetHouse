@@ -28,6 +28,7 @@ export class LoginComponent implements OnInit {
   showPassword = false;
   authMessage = '';
   passwordError = '';
+  acceptedPolicy = false;
 
   readonly googleClientId = GOOGLE_CLIENT_ID;
 
@@ -69,7 +70,7 @@ export class LoginComponent implements OnInit {
       lower: /[a-z]/.test(this.password),
       number: /\d/.test(this.password),
       special: /[!@#$%^&*(),.?":{}|<>]/.test(this.password),
-    };  
+    };
   }
 
   get isPasswordValid(): boolean {
@@ -117,6 +118,38 @@ export class LoginComponent implements OnInit {
     if (!response?.credential) return;
     try {
       const data = await this.userService.googleLogin(response.credential);
+
+      // Verificar si es la primera vez que inicia sesión y si aceptó la política
+      if (data.user && !data.user.accepted_policy) {
+        // Mostrar modal solicitando aceptación de política
+        const result = await Swal.fire({
+          title: 'Política de Tratamiento de Datos',
+          html: `
+            <p class="text-start">Antes de continuar, necesitamos que aceptes nuestra Política de Tratamiento de Datos Personales.</p>
+            <p class="text-start text-muted small">
+              <a href="/politica-datos" target="_blank" class="text-decoration-none" style="color: #ff7859; font-weight: bold;">
+                Lee la política completa aquí
+              </a>
+            </p>
+          `,
+          icon: 'info',
+          showCancelButton: true,
+          confirmButtonText: 'Acepto',
+          cancelButtonText: 'Rechazar',
+          confirmButtonColor: '#ff7859',
+          cancelButtonColor: '#d3d3d3',
+        });
+
+        if (result.isConfirmed) {
+          // Actualizar usuario para marcar que aceptó la política
+          await this.userService.updateUser(data.user.id, { accepted_policy: true });
+          data.user.accepted_policy = true;
+        } else {
+          Swal.fire('Acceso denegado', 'Debes aceptar la política para continuar.', 'error');
+          return;
+        }
+      }
+
       this.authService.setAuth(data.user, data.access_token);
       Swal.fire({ title: 'Bienvenido', text: `Hola ${data.user.name}`, icon: 'success' });
       this.redirectAfterLogin(data.user);
@@ -155,6 +188,7 @@ export class LoginComponent implements OnInit {
       last_name: this.apellido,
       email: this.email,
       password: this.password,
+      accepted_policy: this.acceptedPolicy,
     };
 
     try {
@@ -168,6 +202,7 @@ export class LoginComponent implements OnInit {
       this.apellido = '';
       this.email = '';
       this.password = '';
+      this.acceptedPolicy = false;
       this.isRegister = false;
     } catch (error: any) {
       this.passwordError = error?.error?.detail || error.message || 'Error registrando usuario';
@@ -205,6 +240,7 @@ export class LoginComponent implements OnInit {
   toggleMode(): void {
     this.isRegister = !this.isRegister;
     this.passwordError = '';
+    this.acceptedPolicy = false;
   }
 
   //Pruebar con credenciales predefinidas para facilitar el testing

@@ -12,6 +12,7 @@ import { AdminDashboardComponent } from './features/admin/pages/dashboard/dashbo
 import { AdminHistorialComponent } from './features/admin/pages/historial/historial.component';
 import { AdminMascotasComponent } from './features/admin/pages/mascotas/mascotas.component';
 import { AdminAdopcionComponent } from './features/admin/pages/adopcion/adopcion.component';
+import { PoliticaDatosComponent } from './features/main/pages/politica-datos/politica-datos.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -19,6 +20,7 @@ export const routes: Routes = [
   { path: 'veterinario', component: VeterinarioComponent },
   { path: 'publicar', component: PublicarComponent, canActivate: [authGuard] },
   { path: 'adoptar', component: AdoptarComponent, canActivate: [authGuard] },
+  { path: 'politica-datos', component: PoliticaDatosComponent },
   { path: 'login', component: LoginComponent },
   {
     path: 'admin',

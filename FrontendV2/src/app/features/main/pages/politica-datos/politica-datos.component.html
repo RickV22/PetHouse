@@ -1,0 +1,248 @@
+<app-navbar />
+
+<main class="politica-page py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="politica-card p-4 p-md-5">
+          <div class="text-center mb-5 pb-4 border-bottom">
+            <h1 class="fw-bold mb-2" style="font-size: 2.2rem; color: #1a1a1a">Política de Tratamiento de Datos Personales</h1>
+            <p class="text-secondary mb-0">Última actualización: {{ currentDate | date: 'dd/MM/yyyy' }}</p>
+          </div>
+
+          <div class="politica-content">
+            <!-- 1. Responsable del Tratamiento -->
+            <section class="politica-section mb-5">
+              <h3 class="fw-bold mb-3" style="color: #2c3e50; font-size: 1.3rem">
+                1. Responsable del Tratamiento de Datos
+              </h3>
+              <p class="text-muted lh-lg">
+                <strong>PetHouse</strong>es una plataforma web desarrollada con fines académicos
+                para promover la adopción responsable de perros y gatos. El tratamiento de los datos
+                personales se realizará conforme a los principios establecidos en la Ley 1581 de
+                2012 sobre protección de datos personales en Colombia.
+              </p>
+            </section>
+
+            <!-- 2. Datos Recopilados -->
+            <section class="politica-section mb-5">
+              <h3 class="fw-bold mb-3" style="color: #2c3e50; font-size: 1.3rem">
+                2. Datos Recopilados
+              </h3>
+              <p class="text-muted lh-lg mb-3">
+                Recopilamos los siguientes tipos de datos personales:
+              </p>
+              <ul class="list-unstyled text-muted">
+                <li class="mb-2">
+                  <i class="bi bi-check text-muted me-2"></i>
+                  <strong>Datos de Identificación:</strong> Nombre, apellido.
+                </li>
+                <li class="mb-2">
+                  <i class="bi bi-check text-muted me-2"></i>
+                  <strong>Datos de Contacto:</strong> Correo electrónico, teléfono.
+                </li>
+                <li class="mb-2">
+                  <i class="bi bi-check text-muted me-2"></i>
+                  <strong>Datos de Autenticación:</strong> Contraseña (encriptada), información de
+                  Google Sign-In.
+                </li>
+                <li class="mb-2">
+                  <i class="bi bi-check text-muted me-2"></i>
+                  <strong>Datos de Mascotas:</strong> Información sobre las mascotas publicadas
+                  (nombre, especie, descripción, fotografías).
+                </li>
+                <li class="mb-2">
+                  <i class="bi bi-check text-muted me-2"></i>
+                  <strong>Datos de Historial:</strong> Información sobre adopciones, consultas y
+                  transacciones.
+                </li>
+                <li class="mb-2">
+                  <i class="bi bi-check text-muted me-2"></i>
+                  <strong>Datos de Navegación:</strong> Direcciones IP, cookies, información del
+                  navegador.
+                </li>
+              </ul>
+            </section>
+
+            <!-- 3. Finalidad del Tratamiento -->
+            <section class="politica-section mb-5">
+              <h3 class="fw-bold mb-3" style="color: #2c3e50; font-size: 1.3rem">
+                3. Finalidad del Tratamiento
+              </h3>
+              <p class="text-muted lh-lg mb-3">Utilizamos tus datos personales para:</p>
+              <ul class="list-unstyled text-muted">
+                <li class="mb-2">
+                  <i class="bi bi-arrow-right text-muted me-2"></i>
+                  Crear y mantener tu cuenta de usuario en PetHouse.
+                </li>
+                <li class="mb-2">
+                  <i class="bi bi-arrow-right text-muted me-2"></i>
+                  Facilitar procesos de adopción de mascotas.
+                </li>
+                <li class="mb-2">
+                  <i class="bi bi-arrow-right text-muted me-2"></i>
+                  Enviar notificaciones y actualizaciones sobre adopciones.
+                </li>
+                <li class="mb-2">
+                  <i class="bi bi-arrow-right text-muted me-2"></i>
+                  Gestionar el carnet digital de las mascotas.
+                </li>
+                <li class="mb-2">
+                  <i class="bi bi-arrow-right text-muted me-2"></i>
+                  Generar recordatorios de vacunas, baños, desparasitaciones, controles veterinarios
+                  y corte de uñas.
+                </li>
+                <li class="mb-2">
+                  <i class="bi bi-arrow-right text-muted me-2"></i>
+                  Mejorar la calidad de nuestros servicios.
+                </li>
+                <li class="mb-2">
+                  <i class="bi bi-arrow-right text-muted me-2"></i>
+                  Cumplir con obligaciones legales.
+                </li>
+                <li class="mb-2">
+                  <i class="bi bi-arrow-right text-muted me-2"></i>
+                  Prevenir fraude y asegurar la seguridad de la plataforma.
+                </li>
+              </ul>
+            </section>
+
+            <!-- 4. Medidas de Seguridad -->
+            <section class="politica-section mb-5">
+              <h3 class="fw-bold mb-3" style="color: #2c3e50; font-size: 1.3rem">
+                4. Medidas de Seguridad
+              </h3>
+              <p class="text-muted lh-lg mb-3">
+                Implementamos medidas técnicas, administrativas y físicas para proteger tu
+                información:
+              </p>
+              <ul class="list-unstyled text-muted">
+                <li class="mb-2">
+                  <i class="bi bi-check-square text-muted me-2"></i>
+                  <strong>Encriptación:</strong> Tus datos se transmiten y almacenan utilizando
+                  protocolos de encriptación (HTTPS, bcrypt).
+                </li>
+                <li class="mb-2">
+                  <i class="bi bi-check-square text-muted me-2"></i>
+                  <strong>Autenticación Segura:</strong> Usamos contraseñas encriptadas y
+                  autenticación de dos factores donde es posible.
+                </li>
+                <li class="mb-2">
+                  <i class="bi bi-check-square text-muted me-2"></i>
+                  <strong>Control de Acceso:</strong> Solo personal autorizado puede acceder a datos
+                  personales.
+                </li>
+                <li class="mb-2">
+                  <i class="bi bi-check-square text-muted me-2"></i>
+                  <strong>Auditoría:</strong> Registramos y monitoreamos accesos a datos sensibles.
+                </li>
+                <li class="mb-2">
+                  <i class="bi bi-check-square text-muted me-2"></i>
+                  <strong>Respaldos:</strong> Realizamos copias de seguridad periódicas.
+                </li>
+              </ul>
+            </section>
+
+            <!-- 5. Derechos del Usuario -->
+            <section class="politica-section mb-5">
+              <h3 class="fw-bold mb-3" style="color: #2c3e50; font-size: 1.3rem">
+                5. Derechos del Usuario (Ley 1581 de 2012)
+              </h3>
+              <p class="text-muted lh-lg mb-3">
+                De conformidad con la legislación colombiana, tienes derecho a:
+              </p>
+              <ul class="list-unstyled text-muted">
+                <li class="mb-2">
+                  <i class="bi bi-check text-muted me-2"></i>
+                  <strong>Acceso:</strong> Conocer qué datos personales tenemos sobre ti.
+                </li>
+                <li class="mb-2">
+                  <i class="bi bi-check text-muted me-2"></i>
+                  <strong>Rectificación:</strong> Corregir datos incompletos o inexactos.
+                </li>
+                <li class="mb-2">
+                  <i class="bi bi-check text-muted me-2"></i>
+                  <strong>Supresión:</strong> Solicitar la eliminación de tus datos (bajo ciertas
+                  condiciones).
+                </li>
+                <li class="mb-2">
+                  <i class="bi bi-check text-muted me-2"></i>
+                  <strong>Revocación:</strong> Retirar tu consentimiento en cualquier momento.
+                </li>
+                <li class="mb-2">
+                  <i class="bi bi-check text-muted me-2"></i>
+                  <strong>Información:</strong> Conocer el uso que se da a tus datos.
+                </li>
+              </ul>
+              <p class="text-muted lh-lg mt-3">
+                Para ejercer estos derechos, contacta con nosotros en:
+                <strong>pethouse.soporte@gmail.com</strong>
+              </p>
+            </section>
+
+            <!-- 6. Retención de Datos -->
+            <section class="politica-section mb-5">
+              <h3 class="fw-bold mb-3" style="color: #2c3e50; font-size: 1.3rem">
+                6. Retención de Datos
+              </h3>
+              <p class="text-muted lh-lg">
+                Los datos personales permanecerán almacenados mientras la cuenta del usuario se
+                encuentre activa. En caso de solicitar la eliminación de la cuenta, la información
+                podrá conservarse únicamente durante el tiempo necesario para cumplir obligaciones
+                legales o garantizar la integridad del sistema.
+              </p>
+            </section>
+
+            <!-- 7. Cambios en la Política -->
+            <section class="politica-section mb-5">
+              <h3 class="fw-bold mb-3" style="color: #2c3e50; font-size: 1.3rem">
+                7. Cambios en esta Política
+              </h3>
+              <p class="text-muted lh-lg">
+                Podemos actualizar esta política en cualquier momento. Los cambios significativos se
+                notificarán mediante correo electrónico. Tu uso continuo de la plataforma constituye
+                aceptación de los cambios.
+              </p>
+            </section>
+
+            <!-- 8. Contacto -->
+            <section class="politica-section mb-5">
+              <h3 class="fw-bold mb-3" style="color: #2c3e50; font-size: 1.3rem">
+                8. Contacto
+              </h3>
+              <p class="text-muted lh-lg">
+                Si tienes preguntas sobre esta política o cómo tratamos tus datos, por favor
+                contacta a:
+              </p>
+              <div class="contact-box mt-3 p-3 rounded-2" style="background-color: #f8f9fa; border-left: 3px solid #2c3e50">
+                <p class="mb-2">
+                  <i class="bi bi-envelope me-2" style="color: #2c3e50"></i>
+                  <strong>Email:</strong> pethouse.soporte@gmail.com
+                </p>
+                <p class="mb-0">
+                  <i class="bi bi-telephone me-2" style="color: #2c3e50"></i>
+                  <strong>Teléfono:</strong> +57 (1) 1234-5678
+                </p>
+              </div>
+            </section>
+
+            <!-- Aceptación -->
+            <section class="politica-section">
+              <div
+                class="acceptance-box p-4 rounded-3"
+                style="background-color: rgba(76, 175, 80, 0.05); border: 2px solid #4caf50"
+              > class="acceptance-box p-4 rounded-2" style="background-color: #f0f4f8; border-left: 3px solid #2c3e50">
+                <h5 class="fw-bold mb-3" style="color: #2c3e50; font-size: 1.1rem">
+                  mediante Google, el usuario declara
+                  haber leído y aceptado la presente Política de Tratamiento de Datos Personales,
+                  autorizando el tratamiento de la información suministrada para las finalidades
+                  descritas anteriormente.
+                </p>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

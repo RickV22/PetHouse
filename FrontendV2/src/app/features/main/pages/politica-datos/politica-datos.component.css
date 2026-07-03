@@ -1,0 +1,127 @@
+.politica-page {
+  background: #f7f9fc;
+  min-height: 100vh;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.politica-card {
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e8ecf1;
+  max-width: 900px;
+}
+
+.politica-section {
+  border-left: 3px solid #2c3e50;
+  padding-left: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.politica-section h3 {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: #2c3e50;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.politica-content {
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.politica-content p {
+  font-size: 0.95rem;
+  color: #555;
+  line-height: 1.7;
+  margin-bottom: 1rem;
+}
+
+.politica-content ul {
+  margin-left: 0;
+  padding-left: 0;
+}
+
+.politica-content li {
+  padding: 0.5rem 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #555;
+  list-style: none;
+}
+
+.politica-content li i {
+  color: #95a5a6;
+}
+
+.contact-box {
+  background-color: #f8f9fa;
+  border-left: 3px solid #2c3e50;
+  padding: 1rem 1.5rem;
+  border-radius: 0.4rem;
+}
+
+.contact-box p {
+  margin: 0.5rem 0;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.contact-box i {
+  color: #2c3e50;
+}
+
+.acceptance-box {
+  background-color: #f0f4f8;
+  border-left: 3px solid #2c3e50;
+  padding: 1.5rem;
+  border-radius: 0.4rem;
+}
+
+.acceptance-box h5 {
+  color: #2c3e50;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.acceptance-box p {
+  color: #555;
+  line-height: 1.7;
+}
+
+/* Header styles */
+.politica-card .text-center h1 {
+  color: #1a1a1a;
+  font-size: 2.2rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.politica-card .text-center .text-secondary {
+  color: #95a5a6;
+  font-size: 0.9rem;
+}
+
+.politica-card .border-bottom {
+  border-bottom: 1px solid #e8ecf1;
+}
+
+@media (max-width: 768px) {
+  .politica-card {
+    border-radius: 0.4rem;
+  }
+
+  .politica-card .text-center h1 {
+    font-size: 1.8rem;
+  }
+
+  .politica-section {
+    margin-bottom: 2rem;
+  }
+
+  .politica-section h3 {
+    font-size: 1.15rem;
+  }
+}

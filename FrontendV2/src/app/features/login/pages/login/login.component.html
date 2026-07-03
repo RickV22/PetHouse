@@ -124,11 +124,32 @@
         </div>
       </div>
 
+      <!-- Política de Datos (solo en registro) -->
+      <div *ngIf="isRegister" class="form-check mt-3 mb-3">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          id="politicaCheck"
+          [(ngModel)]="acceptedPolicy"
+        />
+        <label class="form-check-label x-small text-muted" for="politicaCheck">
+          He leído y acepto la
+          <a
+            href="/politica-datos"
+            target="_blank"
+            class="text-decoration-none fw-bold"
+            style="color: #ff7859"
+          >
+            Política de Tratamiento de Datos Personales
+          </a>
+        </label>
+      </div>
+
       <!-- Submit -->
       <button
         class="btn-login py-2 mt-3"
         (click)="handleSubmit()"
-        [disabled]="isRegister && !isPasswordValid"
+        [disabled]="isRegister && (!isPasswordValid || !acceptedPolicy)"
       >
         {{ isRegister ? 'Registrarse' : 'Iniciar Sesión' }}
       </button>

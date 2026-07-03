@@ -140,8 +140,16 @@
                   <i class="bi bi-shield-lock-fill"></i> Compromiso de Bienestar
                 </h6>
                 <p class="small text-muted mb-3 lh-sm">
-                  Certifico que esta información es verídica. Me comprometo a entregar a la mascota
-                  personalmente en la sede de PetHouse para validar su estado de salud.
+                  <ng-container *ngIf="modalidad === 'sede'">
+                    Certifico que esta información es verídica. Me comprometo a entregar a la
+                    mascota personalmente en la sede de PetHouse para validar su estado de salud.
+                  </ng-container>
+                  <ng-container *ngIf="modalidad === 'hogar'">
+                    Certifico que esta información es verídica. Me comprometo a ser responsable del
+                    bienestar de la mascota hasta que el adoptante la recoja en mi hogar. Confirmo
+                    que los interesados podrán verificar el estado y condiciones de vida de la
+                    mascota.
+                  </ng-container>
                 </p>
                 <div class="form-check">
                   <input
@@ -151,7 +159,13 @@
                     [(ngModel)]="acceptedTerms"
                   />
                   <label class="form-check-label fw-bold small" for="termsCheck">
-                    Acepto los términos y el proceso de entrega física.
+                    <ng-container *ngIf="modalidad === 'sede'">
+                      Acepto los términos y el proceso de entrega física en PetHouse.
+                    </ng-container>
+                    <ng-container *ngIf="modalidad === 'hogar'">
+                      Acepto que los interesados me contacten y que el adoptante verifique el estado
+                      de la mascota.
+                    </ng-container>
                   </label>
                 </div>
               </div>
