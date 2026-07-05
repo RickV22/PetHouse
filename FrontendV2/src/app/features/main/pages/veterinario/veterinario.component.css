@@ -826,6 +826,23 @@
   gap: 5px;
 }
 
+.care-actions {
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  padding: 0;
+  background: transparent;
+}
+
+.care-action-btn {
+  flex: 0 0 auto;
+  width: auto;
+  font-size: 0.72rem;
+  line-height: 1.1;
+  padding: 0.22rem 0.5rem;
+  white-space: nowrap;
+}
+
 .care-status-badge {
   position: absolute;
   top: 10px;
