@@ -20,6 +20,7 @@ from app.routes.adoption_status_routes import router as adoption_status_router
 from app.routes.role_permission_routes import router as role_permission_router
 from app.routes.permission_routes import router as permission_router
 from app.routes.audit_log_routes import router as audit_log_router
+from app.routes.pet_health_routes import router as pet_health_router
 
 app = FastAPI()
 
@@ -52,6 +53,9 @@ app.add_middleware(
         "http://127.0.0.1:8000",
         "http://localhost:3000",
         "http://127.0.0.1:3000",
+        "https://zdt224n3-4200.use.devtunnels.ms",
+        "https://zdt224n3-8000.use.devtunnels.ms/",
+        "https://zdt224n3-5432.use.devtunnels.ms/",
         "http://localhost:4200",
     ],
     allow_credentials=True,
@@ -76,6 +80,7 @@ app.include_router(adoption_status_router)
 app.include_router(role_permission_router)
 app.include_router(permission_router)
 app.include_router(audit_log_router)
+app.include_router(pet_health_router)
 
 
 

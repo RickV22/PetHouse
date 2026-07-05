@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Title, Meta } from '@angular/platform-browser';
@@ -33,6 +33,7 @@ export class HomeComponent implements OnInit {
     private metaService: Meta,
     private petService: PetService,
     private cdr: ChangeDetectorRef,
+    private ngZone: NgZone,
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -82,10 +83,16 @@ export class HomeComponent implements OnInit {
   }
 
   openModal(pet: any): void {
-    this.selectedPet = pet;
+    this.ngZone.run(() => {
+      this.selectedPet = pet;
+      this.cdr.detectChanges();
+    });
   }
 
   closeModal(): void {
-    this.selectedPet = null;
+    this.ngZone.run(() => {
+      this.selectedPet = null;
+      this.cdr.detectChanges();
+    });
   }
 }

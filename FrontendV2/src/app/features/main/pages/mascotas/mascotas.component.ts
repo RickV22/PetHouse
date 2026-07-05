@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -28,7 +28,10 @@ export class MascotasComponent implements OnInit {
   filterType = 'all';
   loading = true;
 
-  constructor(private petService: PetService) {}
+  constructor(
+    private petService: PetService,
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   async ngOnInit(): Promise<void> {
     try {
@@ -37,6 +40,7 @@ export class MascotasComponent implements OnInit {
       console.error('Error fetching pets:', error);
     } finally {
       this.loading = false;
+      this.cdr.detectChanges();
     }
   }
 
@@ -60,17 +64,21 @@ export class MascotasComponent implements OnInit {
 
   setFilter(type: string): void {
     this.filterType = type;
+    this.cdr.detectChanges();
   }
 
   openModal(pet: any): void {
     this.selectedPet = pet;
+    this.cdr.detectChanges();
   }
   closeModal(): void {
     this.selectedPet = null;
+    this.cdr.detectChanges();
   }
 
   resetFilters(): void {
     this.search = '';
     this.filterType = 'all';
+    this.cdr.detectChanges();
   }
 }

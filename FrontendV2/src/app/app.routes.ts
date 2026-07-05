@@ -17,7 +17,7 @@ import { PoliticaDatosComponent } from './features/main/pages/politica-datos/pol
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'mascotas', component: MascotasComponent },
-  { path: 'veterinario', component: VeterinarioComponent },
+  { path: 'veterinario', component: VeterinarioComponent, canActivate: [authGuard] },
   { path: 'publicar', component: PublicarComponent, canActivate: [authGuard] },
   { path: 'adoptar', component: AdoptarComponent, canActivate: [authGuard] },
   { path: 'politica-datos', component: PoliticaDatosComponent },

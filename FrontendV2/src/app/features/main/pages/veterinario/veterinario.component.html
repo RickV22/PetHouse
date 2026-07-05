@@ -2,7 +2,7 @@
 
 <!-- ═══════════════════════════════════════════════════ CAMPANA SUPERIOR -->
 <div
-  *ngIf="user && hasActiveReminders"
+  *ngIf="user && selectedPet && hasActiveReminders"
   class="notif-top-anchor"
   [class.sticky-visible]="isBellSticky"
 >
@@ -59,6 +59,16 @@
           Historial, recordatorios y carnet digital de salud en un solo lugar. Tu veterinario
           inteligente, siempre disponible.
         </p>
+
+        <div *ngIf="user && pets.length > 0" class="mb-3" style="max-width: 340px">
+          <label class="form-label fw-bold mb-1">Selecciona una mascota</label>
+          <select class="form-select" [(ngModel)]="selectedPetId" (change)="onPetSelectionChange()">
+            <option *ngFor="let pet of pets" [ngValue]="pet.id">
+              {{ pet.name }} · {{ pet.species }}
+            </option>
+          </select>
+        </div>
+
         <button class="btn-open-agent" (click)="openAgent()">
           <span class="agent-btn-icon">🤖</span>
           Consultar Agente IA
@@ -68,10 +78,12 @@
 
       <div class="hero-pet-preview hero-anim-right">
         <div class="pet-preview-frame">
-          <img [src]="mockPet.photo" [alt]="mockPet.name" />
+          <img [src]="selectedPetImage" [alt]="selectedPet?.name || 'Mascota'" />
           <div class="pet-preview-badge">
-            <span class="badge-name">{{ mockPet.name }}</span>
-            <span class="badge-species">{{ mockPet.species }} · {{ mockPet.breed }}</span>
+            <span class="badge-name">{{ selectedPet?.name || 'Tu mascota' }}</span>
+            <span class="badge-species"
+              >{{ selectedPet?.species || 'Especie' }} · {{ selectedPetRace }}</span
+            >
           </div>
         </div>
       </div>
@@ -89,13 +101,13 @@
 </section>
 
 <!-- ═══════════════════════════════════════════════════════ NOTIFICACIONES -->
-<div *ngIf="user && hasActiveReminders" class="notif-bar">
+<div *ngIf="user && selectedPet && hasActiveReminders" class="notif-bar">
   <div class="container">
     <div class="notif-inner">
       <span class="notif-lead">
         <span class="notif-dot urgent"></span>
         <strong>{{ bellCount }} recordatorio{{ bellCount > 1 ? 's' : '' }}</strong>
-        activo{{ bellCount > 1 ? 's' : '' }} para Luna
+        activo{{ bellCount > 1 ? 's' : '' }} para {{ selectedPet.name }}
       </span>
       <div class="notif-list">
         <span
@@ -119,134 +131,287 @@
   <div class="paw-pattern"></div>
 
   <div class="container position-relative z-2">
-    <div class="row g-4 g-xl-5">
-      <!-- ── COLUMNA IZQUIERDA: Perfil + Carnet ── -->
-      <div class="col-lg-4">
-        <!-- Tarjeta de perfil -->
-        <div class="vet-card profile-card card-anim" style="animation-delay: 0ms">
-          <div class="profile-photo-wrap">
-            <img [src]="mockPet.photo" [alt]="mockPet.name" class="profile-photo" />
-            <span class="profile-species-badge">{{ mockPet.species }}</span>
-          </div>
-          <div class="profile-info">
-            <h2 class="profile-name">{{ mockPet.name }}</h2>
-            <p class="profile-breed">{{ mockPet.breed }}</p>
-            <div class="profile-pills">
-              <span class="info-pill pill-coral">
-                <i class="bi bi-gender-ambiguous"></i> {{ mockPet.sex }}
-              </span>
-              <span class="info-pill pill-teal">
-                <i class="bi bi-calendar-heart"></i> {{ mockPet.age }} años
-              </span>
+    <div *ngIf="loadingPets" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="mt-3">Cargando tus mascotas...</p>
+    </div>
+
+    <div *ngIf="!user" class="text-center py-5">
+      <h3 class="fw-bold">Inicia sesión para ver tu módulo veterinario</h3>
+      <p class="text-muted">Aquí podrás gestionar carnet y recordatorios de tus mascotas.</p>
+      <a routerLink="/login" class="btn btn-primary rounded-pill px-4">Ir a iniciar sesión</a>
+    </div>
+
+    <ng-container *ngIf="user && !loadingPets && selectedPet as pet; else noPetsState">
+      <div class="row g-4 g-xl-5">
+        <!-- ── COLUMNA IZQUIERDA: Perfil + Carnet ── -->
+        <div class="col-lg-4">
+          <!-- Tarjeta de perfil -->
+          <div class="vet-card profile-card card-anim" style="animation-delay: 0ms">
+            <div class="profile-photo-wrap">
+              <img [src]="selectedPetImage" [alt]="pet.name" class="profile-photo" />
+              <span class="profile-species-badge">{{ pet.species }}</span>
             </div>
-          </div>
-        </div>
-
-        <!-- Carnet digital de salud -->
-        <div class="vet-card carnet-card card-anim" style="animation-delay: 80ms">
-          <div class="card-header-section">
-            <span class="section-tag-sm">🏥 Carnet Digital</span>
-            <h3 class="card-title">Ficha de Salud</h3>
-          </div>
-
-          <div class="carnet-row">
-            <span class="carnet-label">Grupo sanguíneo</span>
-            <span class="carnet-value blood-badge">🩸 {{ mockPet.bloodType }}</span>
-          </div>
-
-          <div class="carnet-row">
-            <span class="carnet-label">Alergias</span>
-            <div class="tag-group">
-              <span *ngFor="let a of mockPet.allergies" class="tag tag-coral">{{ a }}</span>
-            </div>
-          </div>
-
-          <div class="carnet-row">
-            <span class="carnet-label">Condiciones</span>
-            <div class="tag-group">
-              <span *ngFor="let c of mockPet.conditions" class="tag tag-teal">{{ c }}</span>
-            </div>
-          </div>
-
-          <div class="carnet-observations">
-            <span class="carnet-label">Observaciones</span>
-            <p class="observations-text">{{ mockPet.observations }}</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- ── COLUMNA DERECHA: Cuidados + Historial ── -->
-      <div class="col-lg-8">
-        <!-- Próximos cuidados -->
-        <div class="section-header-row">
-          <div>
-            <span class="section-tag">🗓️ Próximos Cuidados</span>
-            <h2 class="section-title-sm">Recordatorios de Luna</h2>
-            <div class="title-underline"></div>
-          </div>
-        </div>
-
-        <div class="row g-3 mb-5">
-          <div *ngFor="let care of upcomingCare; let i = index" class="col-sm-6 col-xl-4">
-            <div
-              class="care-card card-anim"
-              [class]="care.colorClass"
-              [style.animation-delay]="i * 60 + 'ms'"
-            >
-              <div class="care-icon">{{ care.icon }}</div>
-              <div class="care-body">
-                <div class="care-type">{{ care.type }}</div>
-                <div class="care-desc">{{ care.description }}</div>
-                <div class="care-date">
-                  <i class="bi bi-calendar3"></i> {{ formatDate(care.date) }}
-                </div>
-              </div>
-              <span
-                class="care-status-badge"
-                [class.badge-urgent]="care.status === 'urgent'"
-                [class.badge-pending]="care.status === 'pending'"
-                [class.badge-ok]="care.status === 'ok'"
-              >
-                <ng-container [ngSwitch]="care.status">
-                  <ng-container *ngSwitchCase="'urgent'">⚠️ Urgente</ng-container>
-                  <ng-container *ngSwitchCase="'pending'">🕒 Próximo</ng-container>
-                  <ng-container *ngSwitchCase="'ok'">✅ Al día</ng-container>
-                </ng-container>
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Historial de cuidados -->
-        <div class="section-header-row">
-          <div>
-            <span class="section-tag">📋 Historial</span>
-            <h2 class="section-title-sm">Cuidados Realizados</h2>
-            <div class="title-underline"></div>
-          </div>
-        </div>
-
-        <div class="timeline">
-          <div
-            *ngFor="let record of careHistory; let i = index; let last = last"
-            class="timeline-item card-anim"
-            [style.animation-delay]="i * 80 + 'ms'"
-          >
-            <div class="timeline-line" *ngIf="!last"></div>
-            <div class="timeline-dot">{{ record.icon }}</div>
-            <div class="timeline-content vet-card">
-              <div class="timeline-meta">
-                <span class="timeline-type">{{ record.type }}</span>
-                <span class="timeline-date">
-                  <i class="bi bi-calendar-check"></i> {{ formatDate(record.date) }}
+            <div class="profile-info">
+              <h2 class="profile-name">{{ pet.name }}</h2>
+              <p class="profile-breed">{{ selectedPetRace }}</p>
+              <div class="profile-pills">
+                <span class="info-pill pill-coral">
+                  <i class="bi bi-gender-ambiguous"></i> {{ selectedPetGender }}
+                </span>
+                <span class="info-pill pill-teal">
+                  <i class="bi bi-calendar-heart"></i> {{ selectedPetAge }}
                 </span>
               </div>
-              <p class="timeline-notes">{{ record.notes }}</p>
             </div>
+          </div>
+
+          <!-- Carnet digital de salud -->
+          <div class="vet-card carnet-card card-anim" style="animation-delay: 80ms">
+            <div class="card-header-section">
+              <span class="section-tag-sm">🏥 Carnet Digital</span>
+              <h3 class="card-title">Ficha de Salud</h3>
+              <button class="btn btn-sm btn-outline-dark mt-2" (click)="startMedicalCardEdit()">
+                {{ hasMedicalCardData ? 'Editar carnet' : 'Agregar info' }}
+              </button>
+            </div>
+
+            <ng-container *ngIf="!editingMedicalCard; else editMedicalCardTpl">
+              <div class="carnet-row">
+                <span class="carnet-label">Grupo sanguíneo</span>
+                <span class="carnet-value blood-badge">
+                  🩸 {{ medicalCardForm.bloodType || 'Sin registrar' }}
+                </span>
+              </div>
+
+              <div class="carnet-row">
+                <span class="carnet-label">Alergias</span>
+                <div class="tag-group">
+                  <span *ngFor="let a of allergiesList" class="tag tag-coral">{{ a }}</span>
+                  <span *ngIf="allergiesList.length === 0" class="text-muted small"
+                    >Sin registrar</span
+                  >
+                </div>
+              </div>
+
+              <div class="carnet-row">
+                <span class="carnet-label">Condiciones</span>
+                <div class="tag-group">
+                  <span *ngFor="let c of conditionsList" class="tag tag-teal">{{ c }}</span>
+                  <span *ngIf="conditionsList.length === 0" class="text-muted small"
+                    >Sin registrar</span
+                  >
+                </div>
+              </div>
+
+              <div class="carnet-observations">
+                <span class="carnet-label">Observaciones</span>
+                <p class="observations-text">
+                  {{ medicalCardForm.observations || 'Sin observaciones registradas.' }}
+                </p>
+              </div>
+            </ng-container>
+
+            <ng-template #editMedicalCardTpl>
+              <hr />
+
+              <div class="mb-2">
+                <label class="form-label mb-1">Grupo sanguíneo</label>
+                <input
+                  class="form-control"
+                  [(ngModel)]="medicalCardForm.bloodType"
+                  placeholder="Ej: DEA 1.1+"
+                />
+              </div>
+              <div class="mb-2">
+                <label class="form-label mb-1">Alergias (separadas por coma)</label>
+                <input
+                  class="form-control"
+                  [(ngModel)]="medicalCardForm.allergies"
+                  placeholder="Ej: Pollo, Polen"
+                />
+              </div>
+              <div class="mb-2">
+                <label class="form-label mb-1">Condiciones (separadas por coma)</label>
+                <input
+                  class="form-control"
+                  [(ngModel)]="medicalCardForm.conditions"
+                  placeholder="Ej: Dermatitis, Hipotiroidismo"
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label mb-1">Observaciones</label>
+                <textarea
+                  class="form-control"
+                  rows="3"
+                  [(ngModel)]="medicalCardForm.observations"
+                  placeholder="Notas veterinarias relevantes"
+                ></textarea>
+              </div>
+
+              <div class="d-flex gap-2">
+                <button
+                  class="btn btn-dark w-100"
+                  [disabled]="savingCard"
+                  (click)="saveMedicalCard()"
+                >
+                  {{ savingCard ? 'Guardando...' : 'Guardar carnet' }}
+                </button>
+                <button
+                  class="btn btn-outline-secondary"
+                  [disabled]="savingCard"
+                  (click)="cancelMedicalCardEdit()"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+
+        <!-- ── COLUMNA DERECHA: Cuidados + Historial ── -->
+        <div class="col-lg-8">
+          <div class="vet-card mb-4" *ngIf="loadingHealthData">
+            <div class="text-center py-4">
+              <div class="spinner-border text-primary" role="status"></div>
+              <p class="mt-2 mb-0">Actualizando salud de {{ pet.name }}...</p>
+            </div>
+          </div>
+
+          <div class="vet-card mb-4" *ngIf="!loadingHealthData">
+            <div class="card-header-section">
+              <span class="section-tag-sm">➕ Nuevo Recordatorio</span>
+              <h3 class="card-title">Agregar cuidado para {{ pet.name }}</h3>
+            </div>
+            <div class="row g-2">
+              <div class="col-md-4">
+                <input
+                  class="form-control"
+                  [(ngModel)]="reminderForm.type"
+                  placeholder="Tipo (Vacuna, Baño...)"
+                />
+              </div>
+              <div class="col-md-4">
+                <input
+                  class="form-control"
+                  type="datetime-local"
+                  [(ngModel)]="reminderForm.fecha"
+                />
+              </div>
+              <div class="col-md-4">
+                <input
+                  class="form-control"
+                  [(ngModel)]="reminderForm.notes"
+                  placeholder="Notas opcionales"
+                />
+              </div>
+            </div>
+            <button
+              class="btn btn-success mt-3"
+              [disabled]="savingReminder"
+              (click)="addReminder()"
+            >
+              {{ savingReminder ? 'Agregando...' : 'Agregar recordatorio' }}
+            </button>
+          </div>
+
+          <!-- Próximos cuidados -->
+          <div class="section-header-row">
+            <div>
+              <span class="section-tag">🗓️ Próximos Cuidados</span>
+              <h2 class="section-title-sm">Recordatorios de {{ pet.name }}</h2>
+              <div class="title-underline"></div>
+            </div>
+          </div>
+
+          <div class="row g-3 mb-5">
+            <div *ngFor="let care of upcomingCare; let i = index" class="col-sm-6 col-xl-4">
+              <div
+                class="care-card card-anim"
+                [class]="care.colorClass"
+                [style.animation-delay]="i * 60 + 'ms'"
+              >
+                <div class="care-icon">{{ care.icon }}</div>
+                <div class="care-body">
+                  <div class="care-type">{{ care.type }}</div>
+                  <div class="care-desc">{{ care.description }}</div>
+                  <div class="care-date">
+                    <i class="bi bi-calendar3"></i> {{ formatDate(care.date) }}
+                  </div>
+                </div>
+                <div class="d-flex gap-2 mt-2 px-2 pb-2">
+                  <button class="btn btn-sm btn-outline-success" (click)="markReminderAsSent(care)">
+                    Marcar hecho
+                  </button>
+                  <button class="btn btn-sm btn-outline-danger" (click)="deleteReminder(care.id)">
+                    Eliminar
+                  </button>
+                </div>
+                <span
+                  class="care-status-badge"
+                  [class.badge-urgent]="care.status === 'urgent'"
+                  [class.badge-pending]="care.status === 'pending'"
+                  [class.badge-ok]="care.status === 'ok'"
+                >
+                  <ng-container [ngSwitch]="care.status">
+                    <ng-container *ngSwitchCase="'urgent'">⚠️ Urgente</ng-container>
+                    <ng-container *ngSwitchCase="'pending'">🕒 Próximo</ng-container>
+                    <ng-container *ngSwitchCase="'ok'">✅ Al día</ng-container>
+                  </ng-container>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="!loadingHealthData && upcomingCare.length === 0" class="vet-card mb-5">
+            <p class="mb-0 text-muted">No hay recordatorios próximos para esta mascota.</p>
+          </div>
+
+          <!-- Historial de cuidados -->
+          <div class="section-header-row">
+            <div>
+              <span class="section-tag">📋 Historial</span>
+              <h2 class="section-title-sm">Cuidados Realizados</h2>
+              <div class="title-underline"></div>
+            </div>
+          </div>
+
+          <div class="timeline">
+            <div
+              *ngFor="let record of careHistory; let i = index; let last = last"
+              class="timeline-item card-anim"
+              [style.animation-delay]="i * 80 + 'ms'"
+            >
+              <div class="timeline-line" *ngIf="!last"></div>
+              <div class="timeline-dot">{{ record.icon }}</div>
+              <div class="timeline-content vet-card">
+                <div class="timeline-meta">
+                  <span class="timeline-type">{{ record.type }}</span>
+                  <span class="timeline-date">
+                    <i class="bi bi-calendar-check"></i> {{ formatDate(record.date) }}
+                  </span>
+                </div>
+                <p class="timeline-notes">{{ record.notes }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="!loadingHealthData && careHistory.length === 0" class="vet-card">
+            <p class="mb-0 text-muted">Aún no hay historial de cuidados para esta mascota.</p>
           </div>
         </div>
       </div>
-    </div>
+    </ng-container>
+
+    <ng-template #noPetsState>
+      <div *ngIf="user && !loadingPets" class="text-center py-5">
+        <h3 class="fw-bold">No tienes mascotas asociadas todavía</h3>
+        <p class="text-muted">
+          Publica o adopta una mascota para habilitar esta vista veterinaria.
+        </p>
+        <a routerLink="/publicar" class="btn btn-primary rounded-pill px-4">Publicar mascota</a>
+      </div>
+    </ng-template>
   </div>
 </section>
 
@@ -284,12 +449,12 @@
     </div>
 
     <!-- Contexto de mascota -->
-    <div class="agent-pet-ctx">
-      <img [src]="mockPet.photo" [alt]="mockPet.name" class="ctx-photo" />
+    <div class="agent-pet-ctx" *ngIf="selectedPet">
+      <img [src]="selectedPetImage" [alt]="selectedPet.name" class="ctx-photo" />
       <div>
-        <strong>{{ mockPet.name }}</strong>
+        <strong>{{ selectedPet.name }}</strong>
         <span class="ctx-species"
-          >{{ mockPet.species }} · {{ mockPet.breed }} · {{ mockPet.age }} años</span
+          >{{ selectedPet.species }} · {{ selectedPetRace }} · {{ selectedPetAge }}</span
         >
       </div>
     </div>

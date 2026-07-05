@@ -26,3 +26,5 @@ class Pet(Base):
 
     publisher = relationship("User", back_populates="pets")
     adoptions = relationship("Adoption", back_populates="pet")
+    medical_card = relationship("PetMedicalCard", back_populates="pet", uselist=False)
+    reminders = relationship("PetReminder", back_populates="pet")

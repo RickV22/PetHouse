@@ -1,10 +1,12 @@
 from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import and_, func, or_
 from fastapi import HTTPException, UploadFile
 from datetime import datetime
 import base64
 
 from app.models.pet_model import Pet
 from app.models.adoption_model import Adoption
+from app.models.adoption_status_model import AdoptionStatus
 from app.models.user_model import User
 from app.schemas.pet_schema import PetCreate, PetUpdate
 from app.core.email import send_pet_approval_email, send_pet_rejection_email, send_sede_instructions_email
@@ -88,7 +90,28 @@ def get_pets(db: Session, status: str = None):
     # Usar joinedload para evitar N+1 y errores de lazy load
     query = db.query(Pet).options(joinedload(Pet.publisher)).filter(Pet.deleted_at == None)
     
-    if status:
+    if status and status.upper() == "AVAILABLE":
+        rejected_status_filter = func.upper(func.coalesce(AdoptionStatus.name, '')).in_(
+            ['REJECTED', 'RECHAZADO', 'RECHAZADA']
+        )
+
+        approved_adoption_exists = (
+            db.query(Adoption.id)
+            .join(AdoptionStatus, AdoptionStatus.id == Adoption.status_id)
+            .filter(
+                Adoption.pet_id == Pet.id,
+                Adoption.deleted_at == None,
+                or_(
+                    Adoption.status_id == 2,
+                    func.upper(func.coalesce(AdoptionStatus.name, ''))
+                    .in_(['APPROVED', 'APROBADO', 'APROBADA']),
+                    and_(AdoptionStatus.is_final == True, ~rejected_status_filter),
+                ),
+            )
+            .exists()
+        )
+        query = query.filter(Pet.status == "AVAILABLE").filter(~approved_adoption_exists)
+    elif status:
         query = query.filter(Pet.status == status)
 
     pets = query.all()

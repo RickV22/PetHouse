@@ -73,11 +73,11 @@ export class PetModalComponent {
     this.closeModal.emit();
   }
 
-  handleAdopt(): void {
+  async handleAdopt(): Promise<void> {
     localStorage.setItem('selectedPet', JSON.stringify(this.selectedPet));
-    this.router.navigate(['/adoptar'], {
+    await this.router.navigate(['/adoptar'], {
       queryParams: { pet_id: this.selectedPet.id },
     });
-    setTimeout(() => this.close(), 50);
+    this.close();
   }
 }

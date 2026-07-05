@@ -13,6 +13,7 @@ from app.controllers.pet_controller import (
     update_pet,
     delete_pet
 )
+from app.controllers.pet_health_controller import get_user_pets
 from app.auth.dependencies import get_current_active_user
 
 router = APIRouter(prefix="/pets", tags=["Pets"])
@@ -64,6 +65,13 @@ def create(
 @router.get("", response_model=List[PetResponse])
 def read_all(status: Optional[str] = None, db: Session = Depends(get_db)):
     return get_pets(db, status=status)
+
+
+# GET MY PETS
+# Esta ruta debe declararse antes de /{pet_id} para evitar que "my" se intente parsear como int.
+@router.get("/my", response_model=List[PetResponse])
+def read_my_pets(current_user=Depends(get_current_active_user), db: Session = Depends(get_db)):
+    return get_user_pets(db, current_user.id)
 
 
 # GET ONE
