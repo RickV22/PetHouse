@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+import traceback
 import requests
 from dotenv import load_dotenv
 
@@ -14,6 +15,8 @@ if not TOKEN:
     sys.exit(1)
 
 BOT_URL = f"https://api.telegram.org/bot{TOKEN}"
+OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://127.0.0.1:11434")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2")
 
 # Importar sesión de base de datos y modelos del proyecto
 # Añadimos el directorio actual al path para importar correctamente app
@@ -21,7 +24,9 @@ sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
 from app.db.session import SessionLocal
 from app.models.user_model import User
-from app.controllers.pet_health_controller import get_user_pets, get_pet_medical_card, get_pet_reminders
+from app.controllers.pet_health_controller import get_user_pets
+from app.models.pet_medical_card_model import PetMedicalCard
+from app.models.pet_reminder_model import PetReminder
 
 # Importación opcional de ollama
 try:
@@ -91,29 +96,45 @@ def get_rag_context(chat_id):
         for pet in user_pets:
             context += f"\n- Nombre: {pet.name}\n"
             context += f"  Especie: {pet.species or 'Desconocida'}, Raza: {pet.race or 'Desconocida'}, Género: {pet.gender or 'Desconocido'}\n"
-            context += f"  Edad: {pet.age or 'Desconocida'} años\n"
             
-            # Ficha médica
-            card = get_pet_medical_card(db, pet.id, user.id)
-            if card:
-                context += f"  Ficha Médica: Tipo de sangre: {card.blood_type or 'No registrado'}, Alergias: {card.allergies or 'Ninguna'}, Condiciones médicas: {card.conditions or 'Ninguna'}, Observaciones: {card.observations or 'Ninguna'}\n"
-            else:
-                context += "  Ficha Médica: No tiene ficha médica registrada todavía.\n"
-            
-            # Recordatorios
-            reminders = get_pet_reminders(db, pet.id, user.id)
-            pending = [r for r in reminders if r.status == "pendiente"]
-            if pending:
-                context += "  Recordatorios Pendientes:\n"
-                for r in pending:
-                    fecha_str = r.fecha.strftime('%d/%m/%Y') if r.fecha else 'Sin fecha'
-                    context += f"    * [{r.type}] programado para el {fecha_str} (Notas: {r.notes or 'Ninguna'})\n"
-            else:
-                context += "  Recordatorios Pendientes: Ninguno registrado.\n"
+            # Lecturas defensivas: evitamos funciones que alteran esquema durante el flujo de Telegram.
+            try:
+                card = (
+                    db.query(PetMedicalCard)
+                    .filter(PetMedicalCard.pet_id == pet.id, PetMedicalCard.deleted_at == None)
+                    .first()
+                )
+                if card:
+                    context += f"  Ficha Médica: Tipo de sangre: {card.blood_type or 'No registrado'}, Alergias: {card.allergies or 'Ninguna'}, Condiciones médicas: {card.conditions or 'Ninguna'}, Observaciones: {card.observations or 'Ninguna'}\n"
+                else:
+                    context += "  Ficha Médica: No tiene ficha médica registrada todavía.\n"
+            except Exception as e:
+                print(f"[WARNING] No se pudo leer ficha médica de pet_id={pet.id}: {e}")
+                context += "  Ficha Médica: Temporalmente no disponible por un problema de conexión.\n"
+
+            try:
+                reminders = (
+                    db.query(PetReminder)
+                    .filter(PetReminder.pet_id == pet.id, PetReminder.deleted_at == None)
+                    .order_by(PetReminder.fecha.asc())
+                    .all()
+                )
+                pending = [r for r in reminders if (r.status or "").lower() == "pendiente"]
+                if pending:
+                    context += "  Recordatorios Pendientes:\n"
+                    for r in pending:
+                        fecha_str = r.fecha.strftime('%d/%m/%Y') if r.fecha else 'Sin fecha'
+                        context += f"    * [{r.type}] programado para el {fecha_str} (Notas: {r.notes or 'Ninguna'})\n"
+                else:
+                    context += "  Recordatorios Pendientes: Ninguno registrado.\n"
+            except Exception as e:
+                print(f"[WARNING] No se pudieron leer recordatorios de pet_id={pet.id}: {e}")
+                context += "  Recordatorios Pendientes: Temporalmente no disponibles por un problema de conexión.\n"
                 
         return user, context
     except Exception as e:
         print(f"[ERROR] Error obteniendo contexto RAG para chat {chat_id}: {e}")
+        traceback.print_exc()
         return None, "Error de base de datos"
     finally:
         db.close()
@@ -135,12 +156,13 @@ def query_ollama_rag(context, query):
     1. Responde a la pregunta del usuario utilizando ÚNICAMENTE los datos provistos en el contexto anterior.
     2. Si el usuario te pregunta por algo de su mascota que NO está en el contexto (por ejemplo, vacunas que no figuran o alergias no mencionadas), dile de forma amigable que no tienes ese dato registrado en PetHouse.
     3. Mantén respuestas concisas, amables y utiliza emojis adecuados (🐾, 🐶, 🐱, ❤️).
-    4. Responde en español de forma natural.
+    4. Responde en español de forma natural y lo más conciso posible.
     """
     
     try:
-        response = ollama.chat(
-            model="llama3.2",
+        client = ollama.Client(host=OLLAMA_HOST)
+        response = client.chat(
+            model=OLLAMA_MODEL,
             messages=[
                 {'role': 'system', 'content': system_prompt.strip()},
                 {'role': 'user', 'content': query}
@@ -153,7 +175,7 @@ def query_ollama_rag(context, query):
         )
         return response['message']['content']
     except Exception as e:
-        print(f"[ERROR] Error al invocar Ollama: {e}")
+        print(f"[ERROR] Error al invocar Ollama (host={OLLAMA_HOST}, model={OLLAMA_MODEL}): {e}")
         return "🐾 Lo siento, estoy teniendo problemas para procesar tu consulta con mi IA. ¿Puedes intentar más tarde?"
 
 def handle_message(chat_id, text):
