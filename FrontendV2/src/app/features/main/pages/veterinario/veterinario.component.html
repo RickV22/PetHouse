@@ -69,11 +69,40 @@
           </select>
         </div>
 
-        <button *ngIf="user && selectedPet" class="btn-open-agent" (click)="openAgent()">
-          <span class="agent-btn-icon">🤖</span>
-          Consultar Agente IA
-          <span class="btn-arrow">→</span>
-        </button>
+        <div *ngIf="user && selectedPet" class="hero-cta-block">
+          <!-- Botón principal -->
+          <button class="btn-open-agent" (click)="openAgent()">
+            <span class="agent-btn-icon">🤖</span>
+            Consultar Agente IA
+            <span class="btn-arrow">→</span>
+          </button>
+
+          <!-- Chip de estado Telegram (debajo del botón, sutil) -->
+          <div *ngIf="user" class="tg-status-row">
+            <!-- No vinculado: link discreto -->
+            <a
+              *ngIf="!hasTelegramLinked()"
+              class="tg-chip tg-chip--link"
+              [href]="getTelegramBotLink()"
+              target="_blank"
+              rel="noopener"
+            >
+              <i class="bi bi-telegram"></i>
+              Vincular Telegram para recibir alertas
+            </a>
+
+            <!-- Vinculado: badge con X para desvincular -->
+            <span *ngIf="hasTelegramLinked()" class="tg-chip tg-chip--active">
+              <i class="bi bi-check-circle-fill"></i>
+              Telegram vinculado
+              <button
+                class="tg-chip-unlink"
+                (click)="unlinkTelegram()"
+                title="Desvincular Telegram"
+              >&#x2715;</button>
+            </span>
+          </div>
+        </div>
       </div>
 
       <div class="hero-pet-preview hero-anim-right">

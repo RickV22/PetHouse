@@ -16,6 +16,7 @@ from app.controllers.user_controller import (
     login_user,
     login_with_google,
     link_telegram_chat,
+    unlink_telegram_chat,
 )
 from app.schemas.user_schema import LoginRequest, TokenResponse
 from app.schemas.user_schema import SocialLoginRequest
@@ -105,3 +106,9 @@ def restore(user_id: int, db: Session = Depends(get_db)):
 @router.post("/link-telegram", response_model=UserResponse)
 def link_telegram(payload: TelegramLinkRequest, db: Session = Depends(get_db)):
     return link_telegram_chat(db, payload.user_id, payload.telegram_chat_id)
+
+
+# UNLINK TELEGRAM
+@router.patch("/unlink-telegram/{user_id}", response_model=UserResponse)
+def unlink_telegram(user_id: int, db: Session = Depends(get_db)):
+    return unlink_telegram_chat(db, user_id)

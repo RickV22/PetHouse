@@ -50,15 +50,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
     return this.user?.name?.charAt(0).toUpperCase() ?? '';
   }
 
-  hasTelegramLinked(): boolean {
-    return !!this.user?.telegram_chat_id;
-  }
-
-  getTelegramBotLink(): string {
-    const botUsername = 'Togopet_bot';
-    return `https://t.me/${botUsername}?start=${this.user?.id}`;
-  }
-
   async logout(): Promise<void> {
     const result = await Swal.fire({
       title: '¿Cerrar sesión?',

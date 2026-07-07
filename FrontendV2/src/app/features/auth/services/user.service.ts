@@ -31,4 +31,13 @@ export class UserService {
       }),
     );
   }
+
+  async unlinkTelegram(userId: number): Promise<any> {
+    const token = localStorage.getItem('token');
+    return firstValueFrom(
+      this.http.patch(`${this.apiUrl}/users/unlink-telegram/${userId}`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+    );
+  }
 }

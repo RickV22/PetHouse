@@ -15,7 +15,7 @@ if not TOKEN:
     sys.exit(1)
 
 BOT_URL = f"https://api.telegram.org/bot{TOKEN}"
-OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://127.0.0.1:11434")
+OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2")
 
 # Importar sesión de base de datos y modelos del proyecto

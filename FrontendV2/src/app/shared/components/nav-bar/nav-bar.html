@@ -81,25 +81,7 @@
                   </a>
                 </li>
 
-                <!-- Telegram Linking -->
-                <li>
-                  <a
-                    *ngIf="!hasTelegramLinked()"
-                    class="dropdown-item cartoon-dropdown-item py-2 text-primary"
-                    [href]="getTelegramBotLink()"
-                    target="_blank"
-                    rel="noopener"
-                  >
-                    <i class="bi bi-telegram me-2"></i> Vincular Telegram
-                  </a>
-                  <span
-                    *ngIf="hasTelegramLinked()"
-                    class="dropdown-item cartoon-dropdown-item py-2 text-success"
-                    style="cursor: default; pointer-events: none;"
-                  >
-                    <i class="bi bi-check-circle-fill me-2"></i> Telegram Activo
-                  </span>
-                </li>
+
 
                 <!-- Logout -->
                 <li>
