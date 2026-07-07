@@ -1,0 +1,13 @@
+<section class="avatar-guia" *ngIf="state">
+  <div class="guide-bubble">
+    <p>{{ state.message }}</p>
+    <button type="button" class="guide-close" (click)="close()" aria-label="Cerrar mensaje">
+      x
+    </button>
+  </div>
+
+  <div class="guide-dog" aria-hidden="true">
+    <div class="dog-head">🐶</div>
+    <div class="dog-shirt">PetHouse</div>
+  </div>
+</section>

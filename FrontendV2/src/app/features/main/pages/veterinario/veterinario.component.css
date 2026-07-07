@@ -971,7 +971,7 @@
   margin: 0;
 }
 
-/* ══════════════════════════════════════════════════════════ FAB */
+/* ════════════FAB */
 .agent-fab {
   position: fixed;
   bottom: 2rem;
@@ -991,6 +991,7 @@
   box-shadow: var(--shadow-cartoon-lg);
   cursor: pointer;
   transition: all 0.25s var(--bounce);
+  animation: attentionBounce 3s ease-in-out infinite;
 }
 .agent-fab:hover {
   transform: translateY(-5px) rotate(-2deg);
@@ -1001,7 +1002,7 @@
   font-size: 1.3rem;
 }
 
-/* ══════════════════════════════════════════════════════════ MODAL */
+/* ════════════MODAL */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -1017,12 +1018,11 @@
   border-radius: var(--radius-blob);
   box-shadow: var(--shadow-cartoon-lg);
   width: 100%;
-  max-width: 420px;
-  max-height: 78vh;
+  max-width: 550px;
+  max-height: 80vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  animation: flyUp 300ms ease-out both;
 }
 
 .agent-header {
@@ -1068,7 +1068,6 @@
   height: 7px;
   border-radius: 50%;
   background: var(--teal);
-  animation: float 1.6s ease-in-out infinite;
 }
 .agent-close {
   width: 32px;

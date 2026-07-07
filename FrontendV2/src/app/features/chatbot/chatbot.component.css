@@ -135,8 +135,8 @@
   position: fixed;
   bottom: 96px;
   right: 24px;
-  width: 360px;
-  height: 530px;
+  width: min(500px, calc(100vw - 1.5rem));
+  height: 460px;
   background: var(--chat-bg);
   border: 3px solid var(--ink);
   border-radius: var(--radius-blob);

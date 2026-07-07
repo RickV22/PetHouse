@@ -197,7 +197,7 @@
               </div>
 
               <div class="carnet-row">
-                <span class="carnet-label">Condiciones</span>
+                <span class="carnet-label">Condición o Enfermedad</span>
                 <div class="tag-group">
                   <span *ngFor="let c of conditionsList" class="tag tag-teal">{{ c }}</span>
                   <span *ngIf="conditionsList.length === 0" class="text-muted small"
@@ -234,7 +234,7 @@
                 />
               </div>
               <div class="mb-2">
-                <label class="form-label mb-1">Condiciones (separadas por coma)</label>
+                <label class="form-label mb-1">Condición o Enfermedad (separadas por coma)</label>
                 <input
                   class="form-control"
                   [(ngModel)]="medicalCardForm.conditions"
@@ -452,10 +452,10 @@
     <div class="agent-header">
       <div class="agent-avatar">🤖</div>
       <div class="agent-header-info">
-        <div class="agent-name">Agente Veterinario IA</div>
+        <div class="agent-name">Agente Veterinario</div>
         <div class="agent-status">
           <span class="status-dot"></span>
-          <span>En línea · PetHouse IA</span>
+          <span>En línea</span>
         </div>
       </div>
       <button class="agent-close" (click)="closeAgent()" title="Cerrar">✕</button>

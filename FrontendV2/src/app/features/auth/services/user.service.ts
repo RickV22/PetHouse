@@ -9,7 +9,7 @@ export class UserService {
   constructor(private http: HttpClient) {}
 
   async registerUser(userData: any): Promise<any> {
-    return firstValueFrom(this.http.post(`${this.apiUrl}/users/`, userData));
+    return firstValueFrom(this.http.post(`${this.apiUrl}/users/register`, userData));
   }
 
   async loginUser(email: string, password: string): Promise<any> {
