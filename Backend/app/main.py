@@ -40,6 +40,7 @@ DEFAULT_CORS_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://localhost:8000",
+    "https://zdt224n3-4200.use.devtunnels.ms/",
     "http://127.0.0.1:8000",
 ]
 ENV_CORS_ORIGINS = [
