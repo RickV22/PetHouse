@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
@@ -91,28 +90,11 @@ export class PetService {
   }
 
   async getMyPets(): Promise<any[]> {
-    try {
-      return await firstValueFrom(
-        this.http.get<any[]>(`${this.apiUrl}/users/me/pets`, {
-          headers: this.authHeaders(),
-        }),
-      );
-    } catch (error) {
-      if (error instanceof HttpErrorResponse) {
-        if (error.status === 401 || error.status === 403) {
-          throw error;
-        }
-        if (error.status !== 404 && error.status !== 405) {
-          throw error;
-        }
-      }
-
-      return firstValueFrom(
-        this.http.get<any[]>(`${this.apiUrl}/pets/my`, {
-          headers: this.authHeaders(),
-        }),
-      );
-    }
+    return firstValueFrom(
+      this.http.get<any[]>(`${this.apiUrl}/users/me/pets`, {
+        headers: this.authHeaders(),
+      }),
+    );
   }
 
   async getPetMedicalCard(petId: number): Promise<PetMedicalCard | null> {

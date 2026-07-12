@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -33,6 +33,7 @@ export class PublicarComponent {
   constructor(
     private petService: PetService,
     private authService: AuthService,
+    private cdr: ChangeDetectorRef,
   ) {
     this.authService.auth$.subscribe((auth) => {
       this.user = auth?.user ?? null;
@@ -117,6 +118,7 @@ export class PublicarComponent {
       Swal.fire('Error', error.message, 'error');
     } finally {
       this.isSubmitting = false;
+      this.cdr.detectChanges();
     }
   }
 

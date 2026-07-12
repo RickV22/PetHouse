@@ -105,6 +105,7 @@ export class VeterinarioComponent implements OnInit, OnDestroy {
       } else {
         this.clearViewState();
       }
+      this.cdr.detectChanges();
     });
   }
 
@@ -112,9 +113,16 @@ export class VeterinarioComponent implements OnInit, OnDestroy {
     this.authSub.unsubscribe();
   }
 
+  private scrollPending = false;
+
   @HostListener('window:scroll')
   onWindowScroll(): void {
-    this.isBellSticky = window.scrollY > 120;
+    if (this.scrollPending) return;
+    this.scrollPending = true;
+    requestAnimationFrame(() => {
+      this.isBellSticky = window.scrollY > 120;
+      this.scrollPending = false;
+    });
   }
 
   hasTelegramLinked(): boolean {
@@ -339,6 +347,7 @@ export class VeterinarioComponent implements OnInit, OnDestroy {
 
   toggleBellPanel(): void {
     this.bellOpen = !this.bellOpen;
+    this.cdr.detectChanges();
   }
 
   openAgent(): void {
@@ -350,10 +359,12 @@ export class VeterinarioComponent implements OnInit, OnDestroy {
         text: `¡Hola! 🐾 Soy el Agente Veterinario Virtual de PetHouse. Puedo orientarte sobre la salud de ${petName}. ¿En qué te puedo ayudar hoy?`,
       });
     }
+    this.cdr.detectChanges();
   }
 
   closeAgent(): void {
     this.agentOpen = false;
+    this.cdr.detectChanges();
   }
 
   sendMessage(): void {
@@ -500,6 +511,7 @@ export class VeterinarioComponent implements OnInit, OnDestroy {
 
   startMedicalCardEdit(): void {
     this.editingMedicalCard = true;
+    this.cdr.detectChanges();
   }
 
   cancelMedicalCardEdit(): void {
