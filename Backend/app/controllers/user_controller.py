@@ -24,6 +24,7 @@ def serialize_user(user: User) -> UserResponse:
         email=user.email,
         is_active=user.is_active,
         created_at=user.created_at,
+        telegram_chat_id=getattr(user, "telegram_chat_id", None),
     )
 
 
@@ -351,3 +352,29 @@ def restore_user(db: Session, user_id: int):
         print(f"Audit logging error: {e}")
 
     return {"message": "Usuario restaurado correctamente"}
+
+
+# =========================
+# TELEGRAM LINKING
+# =========================
+
+def link_telegram_chat(db: Session, user_id: int, telegram_chat_id: str):
+    user = db.query(User).filter(User.id == user_id, User.deleted_at == None).first()
+    if not user:
+        raise HTTPException(404, "Usuario no encontrado")
+    
+    user.telegram_chat_id = telegram_chat_id
+    db.commit()
+    db.refresh(user)
+    return serialize_user(user)
+
+
+def unlink_telegram_chat(db: Session, user_id: int):
+    user = db.query(User).filter(User.id == user_id, User.deleted_at == None).first()
+    if not user:
+        raise HTTPException(404, "Usuario no encontrado")
+    
+    user.telegram_chat_id = None
+    db.commit()
+    db.refresh(user)
+    return serialize_user(user)

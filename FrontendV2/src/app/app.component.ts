@@ -4,11 +4,12 @@ import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { ChatbotComponent } from './features/chatbot/chatbot.component';
+import { AvatarGuiaComponent } from './shared/components/avatar-guia/avatar-guia';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, ChatbotComponent, NgIf],
+  imports: [RouterOutlet, ChatbotComponent, AvatarGuiaComponent, NgIf],
   templateUrl: './app.component.html',
   styleUrls: ['./app.css'],
 })

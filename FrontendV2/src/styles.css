@@ -480,3 +480,15 @@ h5 {
 .bg-cream-dark {
   background-color: var(--cream-dark);
 }
+
+/* Expand Bootstrap containers on large monitors so pages don't look constrained. */
+@media (min-width: 1600px) {
+  .container,
+  .container-sm,
+  .container-md,
+  .container-lg,
+  .container-xl,
+  .container-xxl {
+    max-width: min(1700px, calc(100vw - 4rem));
+  }
+}

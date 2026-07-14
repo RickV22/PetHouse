@@ -23,6 +23,7 @@ import { PetService } from '../../services/pet.service';
   styleUrls: ['./home.component.css'],
 })
 export class HomeComponent implements OnInit {
+  allPets: any[] = [];
   pets: any[] = [];
   selectedPet: any = null;
   search = '';
@@ -49,7 +50,11 @@ export class HomeComponent implements OnInit {
 
   async loadPets(): Promise<void> {
     try {
-      this.pets = await this.petService.getAvailablePets();
+      const allPets = await this.petService.getPets();
+      this.allPets = Array.isArray(allPets) ? allPets : [];
+      this.pets = this.allPets.filter(
+        (pet) => pet.status !== 'REJECTED' && pet.status !== 'PENDING_APPROVAL',
+      );
       this.cdr.detectChanges();
     } catch (error) {
       console.error('Error cargando mascotas:', error);
@@ -79,7 +84,7 @@ export class HomeComponent implements OnInit {
   }
 
   get adoptedCount(): number {
-    return this.pets.filter((p) => p.status === 'ADOPTED').length;
+    return this.allPets.filter((p) => p.status === 'ADOPTED').length;
   }
 
   openModal(pet: any): void {

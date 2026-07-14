@@ -7,6 +7,7 @@ import Swal from 'sweetalert2';
 import { Router, RouterModule } from '@angular/router';
 import { NavbarComponent } from '../../../../shared/components/nav-bar/nav-bar';
 import { AuthService } from '../../../auth/services/auth.service';
+import { UserService } from '../../../auth/services/user.service';
 import { PetMedicalCard, PetReminder, PetService } from '../../services/pet.service';
 import { VeterinarioChatService } from '../../../../core/services/veterinario-chat.service';
 
@@ -89,6 +90,7 @@ export class VeterinarioComponent implements OnInit, OnDestroy {
 
   constructor(
     private authService: AuthService,
+    private userService: UserService,
     private petService: PetService,
     private router: Router,
     private cdr: ChangeDetectorRef,
@@ -103,6 +105,7 @@ export class VeterinarioComponent implements OnInit, OnDestroy {
       } else {
         this.clearViewState();
       }
+      this.cdr.detectChanges();
     });
   }
 
@@ -110,9 +113,73 @@ export class VeterinarioComponent implements OnInit, OnDestroy {
     this.authSub.unsubscribe();
   }
 
+  private scrollPending = false;
+
   @HostListener('window:scroll')
   onWindowScroll(): void {
-    this.isBellSticky = window.scrollY > 120;
+    if (this.scrollPending) return;
+    this.scrollPending = true;
+    requestAnimationFrame(() => {
+      this.isBellSticky = window.scrollY > 120;
+      this.scrollPending = false;
+    });
+  }
+
+  hasTelegramLinked(): boolean {
+    return !!this.user?.telegram_chat_id;
+  }
+
+  getTelegramBotLink(): string {
+    const botUsername = 'Togopet_bot';
+    return `https://t.me/${botUsername}?start=${this.user?.id}`;
+  }
+
+  async unlinkTelegram(): Promise<void> {
+    const result = await Swal.fire({
+      title: '¿Desvincular Telegram?',
+      text: 'Ya no recibirás recordatorios ni podrás consultar al asistente por Telegram.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#FF6B6B',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Sí, desvincular',
+      cancelButtonText: 'Cancelar',
+      background: '#FFF8F0',
+      customClass: {
+        confirmButton: 'swal-btn-confirm',
+        cancelButton: 'swal-btn-cancel',
+        popup: 'swal-cartoon-popup',
+      },
+      buttonsStyling: false,
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      const updatedUser = await this.userService.unlinkTelegram(this.user.id);
+      // Actualizar estado local sin cerrar sesión
+      const merged = { ...this.user, telegram_chat_id: null };
+      this.authService.setAuth(merged, localStorage.getItem('token')!);
+      this.user = merged;
+      this.cdr.detectChanges();
+
+      await Swal.fire({
+        title: '¡Desvinculado! 📱',
+        text: 'Tu cuenta de Telegram ha sido desvinculada correctamente.',
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false,
+        background: '#FFF8F0',
+      });
+    } catch (err) {
+      console.error('[ERROR] No se pudo desvincular Telegram:', err);
+      Swal.fire({
+        title: 'Error',
+        text: 'No se pudo desvincular Telegram. Intenta de nuevo.',
+        icon: 'error',
+        background: '#FFF8F0',
+      });
+    }
   }
 
   @HostListener('document:click', ['$event'])
@@ -280,6 +347,7 @@ export class VeterinarioComponent implements OnInit, OnDestroy {
 
   toggleBellPanel(): void {
     this.bellOpen = !this.bellOpen;
+    this.cdr.detectChanges();
   }
 
   openAgent(): void {
@@ -291,10 +359,12 @@ export class VeterinarioComponent implements OnInit, OnDestroy {
         text: `¡Hola! 🐾 Soy el Agente Veterinario Virtual de PetHouse. Puedo orientarte sobre la salud de ${petName}. ¿En qué te puedo ayudar hoy?`,
       });
     }
+    this.cdr.detectChanges();
   }
 
   closeAgent(): void {
     this.agentOpen = false;
+    this.cdr.detectChanges();
   }
 
   sendMessage(): void {
@@ -441,6 +511,7 @@ export class VeterinarioComponent implements OnInit, OnDestroy {
 
   startMedicalCardEdit(): void {
     this.editingMedicalCard = true;
+    this.cdr.detectChanges();
   }
 
   cancelMedicalCardEdit(): void {

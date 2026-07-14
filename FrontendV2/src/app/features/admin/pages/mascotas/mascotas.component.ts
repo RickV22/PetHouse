@@ -5,6 +5,8 @@ import { Grid, h } from 'gridjs';
 import Swal from 'sweetalert2';
 import { AdminNavbarComponent } from '../../../../shared/components/admin-navbar/admin-navbar';
 import { PetService } from '../../../main/services/pet.service';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 @Component({
   selector: 'app-admin-mascotas',
@@ -377,5 +379,138 @@ export class AdminMascotasComponent implements OnInit, OnDestroy {
         Swal.fire('Error', 'No se pudo actualizar.', 'error');
       }
     }
+  }
+
+  generatePDF(): void {
+    const published = this.pets.filter((p) => p.status === 'AVAILABLE');
+    const adopted = this.pets.filter((p) => p.status === 'ADOPTED');
+
+    const doc = new jsPDF({ orientation: 'landscape' });
+    const primaryColor: [number, number, number] = [67, 97, 238];
+    const successColor: [number, number, number] = [25, 135, 84];
+    const infoColor: [number, number, number] = [13, 110, 253];
+    const lightGray: [number, number, number] = [248, 249, 250];
+    const today = new Date().toLocaleDateString('es-CO', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+
+    // ── Encabezado principal ──
+    doc.setFillColor(...primaryColor);
+    doc.rect(0, 0, 297, 28, 'F');
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text('PetHouse - Reporte de Mascotas', 14, 12);
+
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Generado el ${today}`, 14, 20);
+    doc.text(
+      `Total registradas: ${this.pets.length}   |   Publicadas: ${published.length}   |   Adoptadas: ${adopted.length}`,
+      14,
+      26,
+    );
+
+    let cursorY = 36;
+
+    const columns = [
+      { header: 'Nombre', dataKey: 'name' },
+      { header: 'Publicado por', dataKey: 'publisher' },
+      { header: 'Especie', dataKey: 'species' },
+      { header: 'Raza', dataKey: 'race' },
+      { header: 'Género', dataKey: 'gender' },
+      { header: 'Fecha Registro', dataKey: 'date' },
+    ];
+
+    const genderLabel: Record<string, string> = {
+      macho: 'Macho',
+      hembra: 'Hembra',
+    };
+
+    const buildRows = (pets: any[]) =>
+      pets.map((p) => ({
+        name: p.name ?? '—',
+        publisher: p.publisher_name ?? 'Desconocido',
+        species: p.species ?? '—',
+        race: p.race ?? '—',
+        gender: genderLabel[p.gender] ?? p.gender ?? '—',
+        date: p.created_at ? new Date(p.created_at).toLocaleDateString('es-CO') : '—',
+      }));
+
+    // ── Sección: Publicadas ─
+    doc.setTextColor(...successColor);
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Mascotas Publicadas (${published.length})`, 14, cursorY);
+    cursorY += 4;
+
+    autoTable(doc, {
+      startY: cursorY,
+      columns,
+      body: buildRows(published),
+      theme: 'grid',
+      headStyles: {
+        fillColor: successColor,
+        textColor: 255,
+        fontStyle: 'bold',
+        fontSize: 9,
+      },
+      bodyStyles: { fontSize: 8.5, textColor: [33, 37, 41] },
+      alternateRowStyles: { fillColor: lightGray },
+      styles: { cellPadding: 3 },
+      margin: { left: 14, right: 14 },
+    });
+
+    cursorY = (doc as any).lastAutoTable.finalY + 14;
+
+    // Si la segunda sección no cabe en la misma página, añade una nueva
+    if (cursorY > 170) {
+      doc.addPage();
+      cursorY = 16;
+    }
+
+    // ── Sección: Adoptadas ─────────────────────────────────────────────
+    doc.setTextColor(...infoColor);
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Mascotas Adoptadas (${adopted.length})`, 14, cursorY);
+    cursorY += 4;
+
+    autoTable(doc, {
+      startY: cursorY,
+      columns,
+      body: buildRows(adopted),
+      theme: 'grid',
+      headStyles: {
+        fillColor: infoColor,
+        textColor: 255,
+        fontStyle: 'bold',
+        fontSize: 9,
+      },
+      bodyStyles: { fontSize: 8.5, textColor: [33, 37, 41] },
+      alternateRowStyles: { fillColor: lightGray },
+      styles: { cellPadding: 3 },
+      margin: { left: 14, right: 14 },
+    });
+
+    // ── Pie de página en todas las páginas ────────────────────────────
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(7.5);
+      doc.setTextColor(150);
+      doc.setFont('helvetica', 'normal');
+      doc.text(
+        `PetHouse Admin  •  Página ${i} de ${pageCount}`,
+        297 / 2,
+        doc.internal.pageSize.getHeight() - 6,
+        { align: 'center' },
+      );
+    }
+
+    doc.save(`PetHouse_Mascotas_${new Date().toISOString().slice(0, 10)}.pdf`);
   }
 }

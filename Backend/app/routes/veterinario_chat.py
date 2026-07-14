@@ -72,7 +72,7 @@ def veterinario_chat(data: VeterinarioRequest):
 
         🐶 Paciente
         🩺 Ficha médica
-        💊 Condiciones
+        💊 Condiciones o Enfermedades
         ⚠️ Alergias
         📅 Recordatorios
         ❤️ Observaciones

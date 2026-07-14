@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, HostListener, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import Swal from 'sweetalert2';
@@ -25,11 +25,13 @@ export class NavbarComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private authService: AuthService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
     this.authSub = this.authService.auth$.subscribe((auth) => {
       this.user = auth?.user ?? null;
+      this.cdr.detectChanges();
     });
   }
 
@@ -37,9 +39,16 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.authSub.unsubscribe();
   }
 
+  private scrollPending = false;
+
   @HostListener('window:scroll')
   onScroll(): void {
-    this.scrolled = window.scrollY > 30;
+    if (this.scrollPending) return;
+    this.scrollPending = true;
+    requestAnimationFrame(() => {
+      this.scrolled = window.scrollY > 30;
+      this.scrollPending = false;
+    });
   }
 
   isAdmin(): boolean {

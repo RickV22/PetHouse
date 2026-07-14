@@ -7,7 +7,6 @@
       class="d-flex flex-column flex-md-row justify-content-between align-items-end mb-4 gap-3"
     >
       <div>
-        <span class="history-badge mb-2">📋 Auditoría General</span>
         <h1 class="fw-bold display-6 mb-0">Historial de Actividad</h1>
         <p class="text-muted">Monitorea cada cambio y acción realizada en el sistema.</p>
       </div>
@@ -52,10 +51,20 @@
         </div>
         <div class="col-12 col-md-3">
           <label class="cartoon-label">Rango de Fechas</label>
-          <div class="input-group">
-            <input type="date" class="form-control cartoon-input" [(ngModel)]="startDate" />
-            <span class="input-group-text bg-transparent border-0">al</span>
-            <input type="date" class="form-control cartoon-input" [(ngModel)]="endDate" />
+          <div class="date-range-group">
+            <input
+              type="date"
+              class="form-control cartoon-input"
+              [(ngModel)]="startDate"
+              placeholder="Desde"
+            />
+            <span class="date-range-separator">a</span>
+            <input
+              type="date"
+              class="form-control cartoon-input"
+              [(ngModel)]="endDate"
+              placeholder="Hasta"
+            />
           </div>
         </div>
         <div class="col-12 d-flex flex-wrap align-items-end justify-content-between gap-2 mt-2">
@@ -116,7 +125,14 @@
             </tr>
 
             <!-- Empty -->
-            <tr *ngIf="!loading && filteredLogs.length === 0">
+            <tr *ngIf="!loading && authError">
+              <td colspan="6" class="text-center py-5 text-danger">
+                <i class="bi bi-shield-lock display-4 d-block mb-3"></i>
+                No tienes permisos para ver el historial o tu sesión expiró.
+              </td>
+            </tr>
+
+            <tr *ngIf="!loading && !authError && filteredLogs.length === 0">
               <td colspan="6" class="text-center py-5 text-muted">
                 <i class="bi bi-journal-x display-4 d-block mb-3 opacity-20"></i>
                 No se encontraron registros con esos filtros.

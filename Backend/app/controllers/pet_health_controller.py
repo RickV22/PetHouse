@@ -200,6 +200,41 @@ def get_user_upcoming_reminders(db: Session, user_id: int, days: int = 7) -> lis
     )
 
 
+def _send_telegram_notification(db: Session, user_id: int, pet_name: str, reminder_type: str, fecha: datetime, notes: str):
+    import os
+    import requests
+    from app.models.user_model import User
+    
+    token = os.getenv("TELEGRAM_BOT_TOKEN")
+    if not token:
+        return
+        
+    user = db.query(User).filter(User.id == user_id, User.deleted_at == None).first()
+    if not user or not user.telegram_chat_id:
+        return
+        
+    fecha_str = fecha.strftime("%d/%m/%Y") if fecha else "Sin fecha"
+    mensaje = (
+        f"🔔 *Nuevo Recordatorio en PetHouse*\n\n"
+        f"Se ha programado una tarea de salud para *{pet_name}*:\n"
+        f"📌 *Tipo:* {reminder_type}\n"
+        f"📅 *Fecha:* {fecha_str}\n"
+        f"📝 *Notas:* {notes or 'Ninguna'}\n\n"
+        f"¡Cuidemos juntos a nuestras mascotas! 🐾"
+    )
+    
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+    payload = {
+        "chat_id": user.telegram_chat_id,
+        "text": mensaje,
+        "parse_mode": "Markdown"
+    }
+    try:
+        requests.post(url, json=payload, timeout=10)
+    except Exception as e:
+        print(f"[ERROR] Error al enviar notificación de Telegram: {e}")
+
+
 def create_pet_reminder(
     db: Session,
     pet_id: int,
@@ -220,6 +255,20 @@ def create_pet_reminder(
     db.add(reminder)
     db.commit()
     db.refresh(reminder)
+
+    # Enviar notificación de Telegram si aplica
+    try:
+        _send_telegram_notification(
+            db=db,
+            user_id=user_id,
+            pet_name=reminder.pet.name,
+            reminder_type=reminder.type,
+            fecha=reminder.fecha,
+            notes=reminder.notes
+        )
+    except Exception as e:
+        print(f"[WARNING] No se pudo enviar notificación de Telegram: {e}")
+
     return reminder
 
 

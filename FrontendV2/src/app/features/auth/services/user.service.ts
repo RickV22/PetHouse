@@ -9,7 +9,7 @@ export class UserService {
   constructor(private http: HttpClient) {}
 
   async registerUser(userData: any): Promise<any> {
-    return firstValueFrom(this.http.post(`${this.apiUrl}/users/`, userData));
+    return firstValueFrom(this.http.post(`${this.apiUrl}/users/register`, userData));
   }
 
   async loginUser(email: string, password: string): Promise<any> {
@@ -27,6 +27,15 @@ export class UserService {
     const token = localStorage.getItem('token');
     return firstValueFrom(
       this.http.put(`${this.apiUrl}/users/${id}`, userData, {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+    );
+  }
+
+  async unlinkTelegram(userId: number): Promise<any> {
+    const token = localStorage.getItem('token');
+    return firstValueFrom(
+      this.http.patch(`${this.apiUrl}/users/unlink-telegram/${userId}`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       }),
     );

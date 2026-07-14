@@ -26,6 +26,7 @@ export class AdminHistorialComponent implements OnInit {
   loading = false;
   showDetailModal = false;
   selectedLog: any = null;
+  authError = false;
 
   // Filtros
   filterAction = '';
@@ -50,7 +51,8 @@ export class AdminHistorialComponent implements OnInit {
 
   async loadUsers(): Promise<void> {
     try {
-      this.users = await this.auditService.getUsers();
+      const users = await this.auditService.getUsers();
+      this.users = Array.isArray(users) ? users : [];
     } catch {
       this.users = [];
     }
@@ -67,25 +69,22 @@ export class AdminHistorialComponent implements OnInit {
       if (this.filterAction) params.action = this.filterAction;
       if (this.filterResource) params.resource = this.filterResource;
       if (this.filterUser) params.user_id = this.filterUser;
-      if (this.startDate) params.start_date = new Date(this.startDate).toISOString();
-      if (this.endDate) {
-        const end = new Date(this.endDate);
-        end.setHours(23, 59, 59, 999);
-        params.end_date = end.toISOString();
-      }
+
+      const dateFilters = this.buildDateFilterParams();
+      if (dateFilters.start_date) params.start_date = dateFilters.start_date;
+      if (dateFilters.end_date) params.end_date = dateFilters.end_date;
 
       const logs = await this.auditService.getAuditLogs(params);
-      this.auditLogs = this.decorateLogsWithUserName(logs);
-      this.hasNextPage = this.auditLogs.length === this.pageSize;
-
+      const normalizedLogs = Array.isArray(logs) ? logs : [];
+      this.auditLogs = this.decorateLogsWithUserName(normalizedLogs);
+      this.hasNextPage = normalizedLogs.length === this.pageSize;
+      this.filteredLogs = [...this.auditLogs];
       this.applySearch();
-    } catch (error) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error de Carga',
-        text: 'No se pudo obtener el historial. Verifica tu conexión.',
-        confirmButtonColor: '#ff6b6b',
-      });
+    } catch (error: any) {
+      this.auditLogs = [];
+      this.filteredLogs = [];
+      this.hasNextPage = false;
+      this.authError = error?.status === 401 || error?.status === 403;
     } finally {
       this.loading = false;
     }
@@ -101,6 +100,38 @@ export class AdminHistorialComponent implements OnInit {
       ...l,
       user_name: l.user_id ? userMap[l.user_id] || `Usuario #${l.user_id}` : 'Sistema',
     }));
+  }
+
+  private formatDateForQuery(dateValue: string, endOfDay = false): string | null {
+    if (!dateValue) return null;
+
+    const [year, month, day] = dateValue.split('-').map(Number);
+    if (!year || !month || !day) return null;
+
+    const date = new Date(
+      Date.UTC(
+        year,
+        month - 1,
+        day,
+        endOfDay ? 23 : 0,
+        endOfDay ? 59 : 0,
+        endOfDay ? 59 : 0,
+        endOfDay ? 999 : 0,
+      ),
+    );
+
+    return date.toISOString();
+  }
+
+  private buildDateFilterParams(): { start_date?: string; end_date?: string } {
+    const params: { start_date?: string; end_date?: string } = {};
+    const startDate = this.formatDateForQuery(this.startDate);
+    const endDate = this.formatDateForQuery(this.endDate, true);
+
+    if (startDate) params.start_date = startDate;
+    if (endDate) params.end_date = endDate;
+
+    return params;
   }
 
   applySearch(): void {
@@ -156,8 +187,10 @@ export class AdminHistorialComponent implements OnInit {
       if (this.filterAction) params.action = this.filterAction;
       if (this.filterResource) params.resource = this.filterResource;
       if (this.filterUser) params.user_id = this.filterUser;
-      if (this.startDate) params.start_date = new Date(this.startDate).toISOString();
-      if (this.endDate) params.end_date = new Date(this.endDate).toISOString();
+
+      const dateFilters = this.buildDateFilterParams();
+      if (dateFilters.start_date) params.start_date = dateFilters.start_date;
+      if (dateFilters.end_date) params.end_date = dateFilters.end_date;
 
       const data = await this.auditService.exportAuditLogsCSV(params);
       const blob = new Blob([data.content], { type: 'text/csv;charset=utf-8;' });

@@ -9,6 +9,7 @@ import { AuthService } from '../../services/auth.service';
 import { isAdminRole } from '../../../../shared/utils/roles';
 import { getAndClearRedirectUrl } from '../../../../shared/utils/auth';
 import { environment } from '../../../../../environments/environment';
+import { AvatarGuiaService } from '../../../../shared/components/avatar-guia/avatar-guia.service';
 
 const GOOGLE_CLIENT_ID = environment.googleClientId;
 
@@ -35,6 +36,7 @@ export class LoginComponent implements OnInit {
   constructor(
     private userService: UserService,
     private authService: AuthService,
+    private avatarGuiaService: AvatarGuiaService,
     private router: Router,
     private route: ActivatedRoute,
     private ngZone: NgZone,
@@ -204,6 +206,10 @@ export class LoginComponent implements OnInit {
       this.password = '';
       this.acceptedPolicy = false;
       this.isRegister = false;
+
+      this.avatarGuiaService.show(
+        'Soy Togo de PetHouse. Tu cuenta ya esta lista, inicia sesion para empezar tu aventura.',
+      );
     } catch (error: any) {
       this.passwordError = error?.error?.detail || error.message || 'Error registrando usuario';
       const msg = this.passwordError;

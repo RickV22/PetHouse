@@ -18,6 +18,8 @@ class User(Base):
     deleted_at = Column(DateTime, nullable=True)
 
     is_active = Column(Boolean, default=True)
+    telegram_chat_id = Column(String(50), nullable=True, unique=True)
+
 
     role = relationship("Role", back_populates="users")
     pets = relationship("Pet", back_populates="publisher")

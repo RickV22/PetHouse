@@ -67,6 +67,7 @@ class UserResponse(BaseModel):
     email: EmailStr
     is_active: bool
     created_at: Optional[datetime]
+    telegram_chat_id: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -85,3 +86,8 @@ class TokenResponse(BaseModel):
 
 class SocialLoginRequest(BaseModel):
     id_token: str
+
+
+class TelegramLinkRequest(BaseModel):
+    user_id: int
+    telegram_chat_id: str

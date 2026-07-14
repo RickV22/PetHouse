@@ -69,11 +69,40 @@
           </select>
         </div>
 
-        <button *ngIf="user && selectedPet" class="btn-open-agent" (click)="openAgent()">
-          <span class="agent-btn-icon">🤖</span>
-          Consultar Agente IA
-          <span class="btn-arrow">→</span>
-        </button>
+        <div *ngIf="user && selectedPet" class="hero-cta-block">
+          <!-- Botón principal -->
+          <button class="btn-open-agent" (click)="openAgent()">
+            <span class="agent-btn-icon">🤖</span>
+            Consultar Agente IA
+            <span class="btn-arrow">→</span>
+          </button>
+
+          <!-- Chip de estado Telegram (debajo del botón, sutil) -->
+          <div *ngIf="user" class="tg-status-row">
+            <!-- No vinculado: link discreto -->
+            <a
+              *ngIf="!hasTelegramLinked()"
+              class="tg-chip tg-chip--link"
+              [href]="getTelegramBotLink()"
+              target="_blank"
+              rel="noopener"
+            >
+              <i class="bi bi-telegram"></i>
+              Vincular Telegram para recibir alertas
+            </a>
+
+            <!-- Vinculado: badge con X para desvincular -->
+            <span *ngIf="hasTelegramLinked()" class="tg-chip tg-chip--active">
+              <i class="bi bi-check-circle-fill"></i>
+              Telegram vinculado
+              <button
+                class="tg-chip-unlink"
+                (click)="unlinkTelegram()"
+                title="Desvincular Telegram"
+              >&#x2715;</button>
+            </span>
+          </div>
+        </div>
       </div>
 
       <div class="hero-pet-preview hero-anim-right">
@@ -197,7 +226,7 @@
               </div>
 
               <div class="carnet-row">
-                <span class="carnet-label">Condiciones</span>
+                <span class="carnet-label">Condición o Enfermedad</span>
                 <div class="tag-group">
                   <span *ngFor="let c of conditionsList" class="tag tag-teal">{{ c }}</span>
                   <span *ngIf="conditionsList.length === 0" class="text-muted small"
@@ -234,7 +263,7 @@
                 />
               </div>
               <div class="mb-2">
-                <label class="form-label mb-1">Condiciones (separadas por coma)</label>
+                <label class="form-label mb-1">Condición o Enfermedad (separadas por coma)</label>
                 <input
                   class="form-control"
                   [(ngModel)]="medicalCardForm.conditions"
@@ -452,10 +481,10 @@
     <div class="agent-header">
       <div class="agent-avatar">🤖</div>
       <div class="agent-header-info">
-        <div class="agent-name">Agente Veterinario IA</div>
+        <div class="agent-name">Agente Veterinario</div>
         <div class="agent-status">
           <span class="status-dot"></span>
-          <span>En línea · PetHouse IA</span>
+          <span>En línea</span>
         </div>
       </div>
       <button class="agent-close" (click)="closeAgent()" title="Cerrar">✕</button>

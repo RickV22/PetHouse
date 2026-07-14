@@ -9,7 +9,12 @@ from app.models.adoption_model import Adoption
 from app.models.adoption_status_model import AdoptionStatus
 from app.models.user_model import User
 from app.schemas.pet_schema import PetCreate, PetUpdate
-from app.core.email import send_pet_approval_email, send_pet_rejection_email, send_sede_instructions_email
+from app.core.email import (
+    send_pet_approval_email,
+    send_pet_rejection_email,
+    send_pet_submission_email,
+    send_sede_instructions_email,
+)
 from app.controllers.audit_log_controller import log_action
 
 
@@ -60,6 +65,14 @@ def create_pet(db: Session, pet: PetCreate, user_id: int, image: UploadFile = No
     new_pet.adopter_name = None
     new_pet.adopter_id = None
     new_pet.publisher_name = f"{user.name} {user.last_name or ''}" if user else "Sistema"
+
+    try:
+        if user and new_pet.status == "PENDING_APPROVAL":
+            send_pet_submission_email(user.email, user.name, new_pet.name)
+        elif user and new_pet.status == "AVAILABLE":
+            send_pet_approval_email(user.email, user.name, new_pet.name)
+    except Exception as e:
+        print(f"Error enviando correo de publicación: {e}")
 
     try:
         log_action(
@@ -201,11 +214,14 @@ def update_pet(db: Session, pet_id: int, data: PetUpdate):
             Adoption.deleted_at == None
         ).update({"deleted_at": datetime.utcnow()}, synchronize_session=False)
 
-        # Notificar al publicador que su mascota fue aprobada
+        # Notificar al publicador segun la modalidad de publicación
         try:
             publisher = pet.publisher
             if publisher:
-                send_pet_approval_email(publisher.email, publisher.name, pet.name)
+                if str(getattr(pet, "modalidad", "sede") or "sede").lower() == "hogar":
+                    send_pet_approval_email(publisher.email, publisher.name, pet.name)
+                else:
+                    send_sede_instructions_email(publisher.email, publisher.name, pet.name)
         except Exception as e:
             print(f"Error enviando correo de aprobación de mascota: {e}")
 

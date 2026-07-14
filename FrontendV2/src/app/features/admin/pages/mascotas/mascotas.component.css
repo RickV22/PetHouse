@@ -25,3 +25,31 @@
   padding: 15px !important;
   vertical-align: middle !important;
 }
+
+/* ── Botón Generar PDF ─ */
+.btn-pdf {
+  background: linear-gradient(135deg, #e63946 0%, #c1121f 100%);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0.45rem 1.1rem;
+  border-radius: 10px;
+  border: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+
+.btn-pdf:hover {
+  filter: brightness(1.12);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(198, 18, 31, 0.35) !important;
+  color: #fff;
+}
+
+.btn-pdf:active {
+  transform: translateY(0);
+  filter: brightness(0.95);
+}
+
+.btn-pdf i {
+  font-size: 1rem;
+}

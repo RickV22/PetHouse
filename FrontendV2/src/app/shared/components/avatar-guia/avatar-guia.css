@@ -1,0 +1,126 @@
+:host {
+  position: fixed;
+  left: 20px;
+  bottom: 18px;
+  z-index: 10010;
+  pointer-events: none;
+}
+
+.avatar-guia {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  pointer-events: auto;
+  animation: avatarSlideIn 220ms ease-out;
+}
+
+.guide-bubble {
+  position: relative;
+  max-width: min(330px, calc(100vw - 160px));
+  background: #fff8f0;
+  color: #1a1a2e;
+  border: 3px solid #1a1a2e;
+  border-radius: 16px;
+  box-shadow: 4px 4px 0 #1a1a2e;
+  padding: 12px 36px 12px 14px;
+}
+
+.guide-bubble::after {
+  content: '';
+  position: absolute;
+  right: -11px;
+  bottom: 14px;
+  width: 18px;
+  height: 18px;
+  background: #fff8f0;
+  border-right: 3px solid #1a1a2e;
+  border-bottom: 3px solid #1a1a2e;
+  transform: rotate(-45deg);
+}
+
+.guide-bubble p {
+  margin: 0;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.guide-close {
+  position: absolute;
+  top: 7px;
+  right: 8px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid #1a1a2e;
+  background: #ff6b6b;
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+}
+
+.guide-dog {
+  width: 84px;
+  background: #fff;
+  border: 3px solid #1a1a2e;
+  border-radius: 18px;
+  box-shadow: 4px 4px 0 #1a1a2e;
+  padding: 8px 8px 10px;
+  text-align: center;
+}
+
+.dog-head {
+  font-size: 36px;
+  line-height: 1;
+}
+
+.dog-shirt {
+  margin-top: 4px;
+  font-family: 'Baloo 2', cursive;
+  font-size: 13px;
+  font-weight: 800;
+  color: #1a1a2e;
+  background: #f5b731;
+  border: 2px solid #1a1a2e;
+  border-radius: 999px;
+  padding: 2px 6px;
+}
+
+@keyframes avatarSlideIn {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 576px) {
+  :host {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+  }
+
+  .avatar-guia {
+    gap: 8px;
+  }
+
+  .guide-dog {
+    width: 72px;
+  }
+
+  .dog-head {
+    font-size: 30px;
+  }
+
+  .guide-bubble {
+    max-width: calc(100vw - 120px);
+    padding: 10px 30px 10px 12px;
+  }
+}

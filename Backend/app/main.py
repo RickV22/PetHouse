@@ -1,3 +1,4 @@
+import os
 import time
 
 from fastapi import FastAPI
@@ -25,6 +26,30 @@ from app.routes.pet_health_routes import router as pet_health_router
 
 app = FastAPI()
 
+DEFAULT_CORS_ORIGINS = [
+    "http://localhost:4200",
+    "http://127.0.0.1:4200",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:5174",
+    "http://127.0.0.1:5174",
+    "http://localhost:5175",
+    "http://127.0.0.1:5175",
+    "http://localhost:4173",
+    "http://127.0.0.1:4173",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:8000",
+    "https://zdt224n3-4200.use.devtunnels.ms/",
+    "http://127.0.0.1:8000",
+]
+ENV_CORS_ORIGINS = [
+    origin.strip()
+    for origin in os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
+    if origin.strip()
+]
+CORS_ORIGINS = ENV_CORS_ORIGINS + DEFAULT_CORS_ORIGINS
+
 
 @app.on_event("startup")
 def startup_event():
@@ -43,22 +68,8 @@ def startup_event():
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:5174",
-        "http://127.0.0.1:5174",
-        "http://localhost:5175",
-        "http://127.0.0.1:5175",
-        "http://localhost:4173",
-        "http://127.0.0.1:8000",
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "https://zdt224n3-4200.use.devtunnels.ms",
-        "https://zdt224n3-8000.use.devtunnels.ms/",
-        "https://zdt224n3-5432.use.devtunnels.ms/",
-        "http://localhost:4200",
-    ],
+    allow_origins=CORS_ORIGINS,
+    allow_origin_regex=r"https://.*\.use\.devtunnels\.ms",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

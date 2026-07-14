@@ -111,6 +111,22 @@ El equipo de PetHouse
     return _send(user_email, subject, body)
 
 
+def send_pet_submission_email(user_email: str, user_name: str, pet_name: str) -> bool:
+    subject = f"Hemos recibido tu publicación de {pet_name}"
+    body = f"""Hola {user_name},
+
+Hemos recibido tu publicación de {pet_name} y la estamos revisando.
+
+Nuestro equipo evaluará la información y te notificará por correo cuando la publicación sea aprobada o si necesitamos ajustes.
+
+Gracias por ayudar a encontrar un hogar a una mascota.
+
+Atentamente,
+El equipo de PetHouse
+"""
+    return _send(user_email, subject, body)
+
+
 def send_pet_approval_email(user_email: str, user_name: str, pet_name: str) -> bool:
     subject = f"¡Tu publicación de {pet_name} fue aprobada!"
     body = f"""Hola {user_name},

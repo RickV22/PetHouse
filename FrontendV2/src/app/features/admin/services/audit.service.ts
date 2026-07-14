@@ -15,26 +15,61 @@ export class AuditService {
 
   async getAuditLogs(params: any = {}): Promise<any[]> {
     const query = new URLSearchParams(params).toString();
-    const data = await firstValueFrom(
-      this.http.get<any>(`${this.apiUrl}/audit-logs/?${query}`, {
-        headers: this.getHeaders(),
-      }),
-    );
-    return Array.isArray(data) ? data : (data?.data ?? []);
+    const url = query ? `${this.apiUrl}/audit-logs/?${query}` : `${this.apiUrl}/audit-logs/`;
+
+    try {
+      const data = await firstValueFrom(
+        this.http.get<any>(url, {
+          headers: this.getHeaders(),
+        }),
+      );
+
+      if (Array.isArray(data)) {
+        return data;
+      }
+      if (Array.isArray(data?.data)) {
+        return data.data;
+      }
+      if (Array.isArray(data?.items)) {
+        return data.items;
+      }
+      return [];
+    } catch {
+      return [];
+    }
   }
 
   async getUsers(): Promise<any[]> {
-    return firstValueFrom(
-      this.http.get<any[]>(`${this.apiUrl}/users/`, {
-        headers: this.getHeaders(),
-      }),
-    );
+    try {
+      const data = await firstValueFrom(
+        this.http.get<any>(`${this.apiUrl}/users/`, {
+          headers: this.getHeaders(),
+        }),
+      );
+
+      if (Array.isArray(data)) {
+        return data;
+      }
+      if (Array.isArray(data?.data)) {
+        return data.data;
+      }
+      if (Array.isArray(data?.items)) {
+        return data.items;
+      }
+      return [];
+    } catch {
+      return [];
+    }
   }
 
   async exportAuditLogsCSV(params: any = {}): Promise<{ content: string; filename: string }> {
     const query = new URLSearchParams(params).toString();
+    const url = query
+      ? `${this.apiUrl}/audit-logs/export/csv?${query}`
+      : `${this.apiUrl}/audit-logs/export/csv`;
+
     return firstValueFrom(
-      this.http.get<any>(`${this.apiUrl}/audit-logs/export/csv?${query}`, {
+      this.http.get<any>(url, {
         headers: this.getHeaders(),
       }),
     );
