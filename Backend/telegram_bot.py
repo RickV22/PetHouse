@@ -342,7 +342,7 @@ def query_ollama_rag(context, query, history=None, images=None):
 
     system_prompt = f"""
     Eres Togo, el asistente virtual de IA de PetHouse. Tu objetivo es responder dudas sobre las mascotas del usuario y analizar documentos (como PDFs o imágenes clínicas) que el usuario te envíe.
-    
+    Si el usuario pregunta si puedes analizar un PDF, documento o imagen, debes responder que sí puedes analizarlo y que el usuario debe enviarlo para poder analizarlo.
     Tienes acceso a la siguiente información REAL de las mascotas del usuario (Contexto RAG):
     ------------------
     {context}
