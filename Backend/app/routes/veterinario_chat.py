@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
-
+from app.services.respuesta_service import limpiar_respuesta
 from ollama import Client
 
 from app.services.contexto_veterinario import obtener_contexto_mascota
@@ -135,6 +135,10 @@ def veterinario_chat(data: VeterinarioRequest):
         ]
     )
 
+    texto = limpiar_respuesta(
+        respuesta["message"]["content"]
+    )
+
     return {
-        "respuesta": respuesta["message"]["content"]
+        "respuesta": texto
     }

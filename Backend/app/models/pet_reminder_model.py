@@ -5,7 +5,9 @@ from sqlalchemy.orm import relationship
 
 from app.db.base import Base
 
-
+# ===========================
+# Pet Reminder Model    
+# que hace? = Representa un recordatorio para una mascota   
 class PetReminder(Base):
     __tablename__ = "pet_reminders"
 
