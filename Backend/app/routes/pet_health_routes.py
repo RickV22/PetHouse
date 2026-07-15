@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Request
 from sqlalchemy.orm import Session
 
 from app.auth.dependencies import get_current_active_user
@@ -23,13 +23,16 @@ from app.schemas.pet_health_schema import (
     PetReminderUpdate,
 )
 from app.schemas.pet_schema import PetResponse
+from app.routes.pet_routes import _format_pets_image_url
 
 router = APIRouter(tags=["PetHealth"])
 
 
 @router.get("/users/me/pets", response_model=List[PetResponse])
-def read_my_pets(current_user=Depends(get_current_active_user), db: Session = Depends(get_db)):
-    return get_user_pets(db, current_user.id)
+def read_my_pets(request: Request, current_user=Depends(get_current_active_user), db: Session = Depends(get_db)):
+    pets = get_user_pets(db, current_user.id)
+    _format_pets_image_url(pets, request)
+    return pets
 
 
 @router.get("/pets/{pet_id}/medical-card", response_model=Optional[PetMedicalCardResponse])
