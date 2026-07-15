@@ -117,6 +117,42 @@ def veterinario_chat(data: VeterinarioRequest):
         ====================================================
         EXPEDIENTE DEL PACIENTE
         ====================================================
+        FORMATO OBLIGATORIO
+
+        Responde únicamente en texto plano.
+
+        No utilices:
+
+        - Markdown
+        - **
+        - ##
+        - ###
+        - ======
+        - ------
+        - ______
+        - tablas
+        - listas Markdown
+
+        No utilices separadores decorativos.
+
+        Cuando presentes información clínica utiliza únicamente:
+
+        🐶 Paciente
+
+        Nombre:
+        Especie:
+        Raza:
+        Sexo:
+
+        ❤️ Salud
+
+        Condiciones:
+        Alergias:
+        Observaciones:
+
+        📅 Recordatorios
+
+        ...
 
 {contexto}
 """

@@ -6,18 +6,20 @@ def limpiar_respuesta(texto: str) -> str:
     Limpia la respuesta generada por la IA.
     """
 
-    reemplazos = [
-        ("**", ""),
-        ("###", ""),
-        ("##", ""),
-        ("```", ""),
-        ("`", ""),
-    ]
+    # Elimina Markdown
+    texto = texto.replace("**", "")
+    texto = texto.replace("###", "")
+    texto = texto.replace("##", "")
+    texto = texto.replace("```", "")
+    texto = texto.replace("`", "")
 
-    for viejo, nuevo in reemplazos:
-        texto = texto.replace(viejo, nuevo)
+    # Elimina líneas compuestas únicamente por = - _
+    texto = re.sub(r"^[=\-_]{3,}$", "", texto, flags=re.MULTILINE)
 
-    # Elimina saltos de línea excesivos
+    # Elimina varios saltos de línea seguidos
     texto = re.sub(r"\n{3,}", "\n\n", texto)
+
+    # Elimina espacios repetidos
+    texto = re.sub(r"[ \t]{2,}", " ", texto)
 
     return texto.strip()
