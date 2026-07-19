@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment.development';
 
 @Injectable({
   providedIn: 'root'
 })
 export class VeterinarioChatService {
 
-  private readonly apiUrl = 'http://localhost:8000/veterinario/chat';
+  private readonly apiUrl = `${environment.apiUrl}/veterinario/chat`;
 
   constructor(private readonly http: HttpClient) {}
 

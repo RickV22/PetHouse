@@ -41,6 +41,7 @@ DEFAULT_CORS_ORIGINS = [
     "http://127.0.0.1:3000",
     "http://localhost:8000",
     "https://zdt224n3-4200.use.devtunnels.ms/",
+    "https://arrival-makeup-asked-ericsson.trycloudflare.com",
     "http://127.0.0.1:8000",
 ]
 ENV_CORS_ORIGINS = [
