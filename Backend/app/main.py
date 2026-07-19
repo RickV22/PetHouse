@@ -37,12 +37,10 @@ DEFAULT_CORS_ORIGINS = [
     "http://127.0.0.1:5175",
     "http://localhost:4173",
     "http://127.0.0.1:4173",
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
     "http://localhost:8000",
     "https://zdt224n3-4200.use.devtunnels.ms/",
-    "https://arrival-makeup-asked-ericsson.trycloudflare.com",
-    "https://pet-house-taupe.vercel.app",
+    "https://pet-house-git-main-rickv22s-projects.vercel.app/",
+    "https://pet-house-taupe.vercel.app/",
     "http://127.0.0.1:8000",
 ]
 ENV_CORS_ORIGINS = [
