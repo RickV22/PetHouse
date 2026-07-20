@@ -18,6 +18,7 @@ export class AdminAdopcionComponent implements OnInit, OnDestroy {
   sortOrder = 'recent';
   activeFilter = 'Todos';
   filters = ['Todos', 'Pendiente', 'Aprobado', 'Rechazado'];
+  isLoading = true;
   private grid: any;
 
   private readonly STATUS_ID: Record<string, number> = {
@@ -96,11 +97,14 @@ export class AdminAdopcionComponent implements OnInit, OnDestroy {
   // }
 
   async loadRequests(): Promise<void> {
+    this.isLoading = true;
     try {
       this.requests = await this.adoptionService.getAdoptions();
       setTimeout(() => this.renderGrid(), 0);
     } catch (error) {
       console.error('Error cargando solicitudes:', error);
+    } finally {
+      this.isLoading = false;
     }
   }
 

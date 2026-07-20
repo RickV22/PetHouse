@@ -27,6 +27,10 @@ export class PublicarComponent {
   acceptedTerms = false;
   preview = '';
   isSubmitting = false;
+  
+  // Wizard steps control
+  currentStep = 1;
+  totalSteps = 3;
 
   user: any = null;
 
@@ -122,6 +126,39 @@ export class PublicarComponent {
     }
   }
 
+  nextStep(): void {
+    if (this.currentStep === 1) {
+      if (!this.name || !this.species) {
+        Swal.fire({
+          title: '¡Oops!',
+          text: 'Por favor, completa los campos obligatorios (*). 🐾',
+          icon: 'warning',
+          confirmButtonColor: '#F5B731',
+        });
+        return;
+      }
+    }
+    if (this.currentStep < this.totalSteps) {
+      this.currentStep++;
+    }
+  }
+
+  prevStep(): void {
+    if (this.currentStep > 1) {
+      this.currentStep--;
+    }
+  }
+
+  setStep(step: number): void {
+    if (step < this.currentStep) {
+      this.currentStep = step;
+    } else if (step === 2 && this.name && this.species) {
+      this.currentStep = step;
+    } else if (step === 3 && this.name && this.species) {
+      this.currentStep = step;
+    }
+  }
+
   private resetForm(): void {
     this.name = '';
     this.species = '';
@@ -133,5 +170,6 @@ export class PublicarComponent {
     this.imageFile = null;
     this.preview = '';
     this.acceptedTerms = false;
+    this.currentStep = 1;
   }
 }

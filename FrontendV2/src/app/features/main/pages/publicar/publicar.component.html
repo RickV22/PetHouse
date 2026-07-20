@@ -11,176 +11,224 @@
             <p class="text-muted">Ayúdanos a encontrarle el hogar que se merece</p>
           </div>
 
-          <div class="row g-4">
-            <!-- Imagen -->
-            <div class="col-md-5 order-md-2">
-              <div class="image-upload-wrapper" [class.has-preview]="preview">
-                <ng-container *ngIf="preview; else uploadLabel">
-                  <img [src]="preview" alt="Vista previa" class="preview-img" />
-                  <button class="btn btn-sm btn-danger remove-img" (click)="removeImage()">
-                    <i class="bi bi-x"></i>
-                  </button>
-                </ng-container>
-                <ng-template #uploadLabel>
-                  <label class="upload-label">
-                    <i class="bi bi-camera-fill display-4 mb-2"></i>
-                    <span class="small fw-bold">Subir Foto</span>
-                    <input
-                      type="file"
-                      class="d-none"
-                      accept="image/*"
-                      (change)="handleImage($event)"
-                    />
-                  </label>
-                </ng-template>
-              </div>
+          <!-- Wizard Progress Bar -->
+          <div class="wizard-progress-bar mb-4">
+            <div class="wizard-progress-line">
+              <div class="wizard-progress-line-fill" [style.width]="((currentStep - 1) / (totalSteps - 1)) * 100 + '%'"></div>
             </div>
-
-            <!-- Datos -->
-            <div class="col-md-7 order-md-1">
-              <div class="row g-3">
-                <div class="col-12">
-                  <label class="form-label cartoon-label">Nombre de la Mascota *</label>
-                  <input
-                    class="form-control cartoon-input"
-                    [(ngModel)]="name"
-                    placeholder="Ej: Bobby"
-                  />
-                </div>
-
-                <div class="col-6">
-                  <label class="form-label cartoon-label">Especie *</label>
-                  <select class="form-select cartoon-input" [(ngModel)]="species">
-                    <option value="">Elegir...</option>
-                    <option value="perro">🐶 Perro</option>
-                    <option value="gato">🐱 Gato</option>
-                  </select>
-                </div>
-
-                <div class="col-6">
-                  <label class="form-label cartoon-label">Género</label>
-                  <select class="form-select cartoon-input" [(ngModel)]="gender">
-                    <option value="">Elegir...</option>
-                    <option value="macho">Macho</option>
-                    <option value="hembra">Hembra</option>
-                  </select>
-                </div>
-
-                <div class="col-12">
-                  <label class="form-label cartoon-label">Raza (opcional)</label>
-                  <input
-                    class="form-control cartoon-input"
-                    [(ngModel)]="race"
-                    placeholder="Ej: Golden Retriever"
-                  />
-                </div>
-
-                <div class="col-12">
-                  <label class="form-label cartoon-label">Fecha Nacimiento (aprox)</label>
-                  <input type="date" class="form-control cartoon-input" [(ngModel)]="birth_date" />
-                </div>
-              </div>
+            
+            <div class="wizard-step" [class.active]="currentStep >= 1" [class.completed]="currentStep > 1" (click)="setStep(1)">
+              <div class="step-circle">1</div>
+              <span class="step-label">Datos</span>
             </div>
-
-            <!-- Descripción -->
-            <div class="col-12 order-3">
-              <label class="form-label cartoon-label">Cuéntanos sobre su personalidad</label>
-              <textarea
-                class="form-control cartoon-input"
-                rows="4"
-                [(ngModel)]="description"
-                [placeholder]="
-                  modalidad === 'hogar'
-                    ? 'Es muy juguetón, le gustan los niños... (Incluye tu número de contacto o WhatsApp para que los interesados te escriban 📱)'
-                    : 'Es muy juguetón, le gustan los niños...'
-                "
-              ></textarea>
-              <div *ngIf="modalidad === 'hogar'" class="mt-1 text-primary small">
-                <i class="bi bi-info-circle-fill me-1"></i>
-                Recuerda incluir tu <strong>número de contacto o WhatsApp</strong> en la descripción
-                para que los interesados puedan comunicarse contigo.
-              </div>
+            
+            <div class="wizard-step" [class.active]="currentStep >= 2" [class.completed]="currentStep > 2" (click)="setStep(2)">
+              <div class="step-circle">2</div>
+              <span class="step-label">Foto</span>
             </div>
-
-            <!-- Modalidad de entrega -->
-            <div class="col-12 order-3">
-              <label class="form-label cartoon-label">¿Dónde estará la mascota? *</label>
-              <div class="d-flex gap-3 mt-1">
-                <div
-                  class="modalidad-card flex-fill p-3 rounded-3 border text-center"
-                  [class.selected]="modalidad === 'sede'"
-                  (click)="modalidad = 'sede'"
-                  style="cursor: pointer"
-                >
-                  <div style="font-size: 1.6rem">🏡</div>
-                  <div class="fw-bold small mt-1">La llevo a la sede</div>
-                  <div class="text-muted" style="font-size: 0.75rem">
-                    PetHouse se encarga del proceso
-                  </div>
-                </div>
-                <div
-                  class="modalidad-card flex-fill p-3 rounded-3 border text-center"
-                  [class.selected]="modalidad === 'hogar'"
-                  (click)="modalidad = 'hogar'"
-                  style="cursor: pointer"
-                >
-                  <div style="font-size: 1.6rem">🏠</div>
-                  <div class="fw-bold small mt-1">Se queda en mi hogar</div>
-                  <div class="text-muted" style="font-size: 0.75rem">
-                    Los interesados te contactan directo
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Legal + Submit -->
-            <div class="col-12 order-4">
-              <div class="legal-cartoon-box p-3 mb-3">
-                <h6 class="fw-bold text-coral d-flex align-items-center gap-2">
-                  <i class="bi bi-shield-lock-fill"></i> Compromiso de Bienestar
-                </h6>
-                <p class="small text-muted mb-3 lh-sm">
-                  <ng-container *ngIf="modalidad === 'sede'">
-                    Certifico que esta información es verídica. Me comprometo a entregar a la
-                    mascota personalmente en la sede de PetHouse para validar su estado de salud.
-                  </ng-container>
-                  <ng-container *ngIf="modalidad === 'hogar'">
-                    Certifico que esta información es verídica. Me comprometo a ser responsable del
-                    bienestar de la mascota hasta que el adoptante la recoja en mi hogar. Confirmo
-                    que los interesados podrán verificar el estado y condiciones de vida de la
-                    mascota.
-                  </ng-container>
-                </p>
-                <div class="form-check">
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    id="termsCheck"
-                    [(ngModel)]="acceptedTerms"
-                  />
-                  <label class="form-check-label fw-bold small" for="termsCheck">
-                    <ng-container *ngIf="modalidad === 'sede'">
-                      Acepto los términos y el proceso de entrega física en PetHouse.
-                    </ng-container>
-                    <ng-container *ngIf="modalidad === 'hogar'">
-                      Acepto que los interesados me contacten y que el adoptante verifique el estado
-                      de la mascota.
-                    </ng-container>
-                  </label>
-                </div>
-              </div>
-
-              <button
-                class="btn btn-publish-cartoon w-100 py-3"
-                (click)="publishPet()"
-                [disabled]="isSubmitting"
-              >
-                <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
-                <i *ngIf="!isSubmitting" class="bi bi-send-fill me-2"></i>
-                {{ isSubmitting ? 'Publicando...' : 'Enviar Publicación' }}
-              </button>
+            
+            <div class="wizard-step" [class.active]="currentStep >= 3" [class.completed]="currentStep > 3" (click)="setStep(3)">
+              <div class="step-circle">3</div>
+              <span class="step-label">Finalizar</span>
             </div>
           </div>
+
+          <!-- STEP 1: Basic Info -->
+          <div *ngIf="currentStep === 1" class="wizard-step-content anim-fade-in">
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="form-label cartoon-label">Nombre de la Mascota *</label>
+                <input
+                  class="form-control cartoon-input"
+                  [(ngModel)]="name"
+                  placeholder="Ej: Bobby"
+                />
+              </div>
+
+              <div class="col-6">
+                <label class="form-label cartoon-label">Especie *</label>
+                <select class="form-select cartoon-input" [(ngModel)]="species">
+                  <option value="">Elegir...</option>
+                  <option value="perro">🐶 Perro</option>
+                  <option value="gato">🐱 Gato</option>
+                </select>
+              </div>
+
+              <div class="col-6">
+                <label class="form-label cartoon-label">Género</label>
+                <select class="form-select cartoon-input" [(ngModel)]="gender">
+                  <option value="">Elegir...</option>
+                  <option value="macho">Macho</option>
+                  <option value="hembra">Hembra</option>
+                </select>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label cartoon-label">Raza (opcional)</label>
+                <input
+                  class="form-control cartoon-input"
+                  [(ngModel)]="race"
+                  placeholder="Ej: Golden Retriever"
+                />
+              </div>
+
+              <div class="col-12">
+                <label class="form-label cartoon-label">Fecha Nacimiento (aprox)</label>
+                <input type="date" class="form-control cartoon-input" [(ngModel)]="birth_date" />
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 2: Photo and Description -->
+          <div *ngIf="currentStep === 2" class="wizard-step-content anim-fade-in">
+            <div class="row g-4">
+              <!-- Imagen -->
+              <div class="col-12 col-md-5">
+                <label class="form-label cartoon-label d-block text-center text-md-start">Foto de la Mascota</label>
+                <div class="image-upload-wrapper" [class.has-preview]="preview">
+                  <ng-container *ngIf="preview; else uploadLabel">
+                    <img [src]="preview" alt="Vista previa" class="preview-img" />
+                    <button class="btn btn-sm btn-danger remove-img" (click)="removeImage()">
+                      <i class="bi bi-x"></i>
+                    </button>
+                  </ng-container>
+                  <ng-template #uploadLabel>
+                    <label class="upload-label">
+                      <i class="bi bi-camera-fill display-4 mb-2"></i>
+                      <span class="small fw-bold">Subir Foto</span>
+                      <input
+                        type="file"
+                        class="d-none"
+                        accept="image/*"
+                        (change)="handleImage($event)"
+                      />
+                    </label>
+                  </ng-template>
+                </div>
+              </div>
+
+              <!-- Descripción -->
+              <div class="col-12 col-md-7">
+                <label class="form-label cartoon-label">Cuéntanos sobre su personalidad</label>
+                <textarea
+                  class="form-control cartoon-input textarea-cartoon"
+                  rows="6"
+                  [(ngModel)]="description"
+                  [placeholder]="
+                    modalidad === 'hogar'
+                      ? 'Es muy juguetón, le gustan los niños... (Incluye tu número de contacto o WhatsApp para que los interesados te escriban 📱)'
+                      : 'Es muy juguetón, le gustan los niños...'
+                  "
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 3: Modalidad & Terms & Submit -->
+          <div *ngIf="currentStep === 3" class="wizard-step-content anim-fade-in">
+            <div class="row g-4">
+              <!-- Modalidad de entrega -->
+              <div class="col-12">
+                <label class="form-label cartoon-label">¿Dónde estará la mascota? *</label>
+                <div class="modalidad-cards-container gap-3 mt-1">
+                  <div
+                    class="modalidad-card p-3 rounded-3 border text-center"
+                    [class.selected]="modalidad === 'sede'"
+                    (click)="modalidad = 'sede'"
+                    style="cursor: pointer"
+                  >
+                    <div class="modalidad-icon-size">🏡</div>
+                    <div class="fw-bold small mt-1">La llevo a la sede</div>
+                    <div class="text-muted small-text">
+                      PetHouse se encarga del proceso de adopción
+                    </div>
+                  </div>
+                  <div
+                    class="modalidad-card p-3 rounded-3 border text-center"
+                    [class.selected]="modalidad === 'hogar'"
+                    (click)="modalidad = 'hogar'"
+                    style="cursor: pointer"
+                  >
+                    <div class="modalidad-icon-size">🏠</div>
+                    <div class="fw-bold small mt-1">Se queda en mi hogar</div>
+                    <div class="text-muted small-text">
+                      Los interesados te contactan directo a ti
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="modalidad === 'hogar'" class="mt-2 text-primary small">
+                  <i class="bi bi-info-circle-fill me-1"></i>
+                  Recuerda incluir tu <strong>número de contacto o WhatsApp</strong> en la descripción (Paso 2)
+                  para que los interesados puedan comunicarse contigo.
+                </div>
+              </div>
+
+              <!-- Legal + Submit -->
+              <div class="col-12">
+                <div class="legal-cartoon-box p-3 mb-3">
+                  <h6 class="fw-bold text-coral d-flex align-items-center gap-2">
+                    <i class="bi bi-shield-lock-fill"></i> Compromiso de Bienestar
+                  </h6>
+                  
+                  <div class="legal-scroll-text small text-muted mb-3">
+                    <p class="mb-0">
+                      <ng-container *ngIf="modalidad === 'sede'">
+                        Certifico que esta información es verídica. Me comprometo a entregar a la
+                        mascota personalmente en la sede de PetHouse para validar su estado de salud.
+                      </ng-container>
+                      <ng-container *ngIf="modalidad === 'hogar'">
+                        Certifico que esta información es verídica. Me comprometo a ser responsable del
+                        bienestar de la mascota hasta que el adoptante la recoja en mi hogar. Confirmo
+                        que los interesados podrán verificar el estado y condiciones de vida de la
+                        mascota.
+                      </ng-container>
+                    </p>
+                  </div>
+
+                  <div class="form-check">
+                    <input
+                      class="form-check-input check-cartoon"
+                      type="checkbox"
+                      id="termsCheck"
+                      [(ngModel)]="acceptedTerms"
+                    />
+                    <label class="form-check-label fw-bold small text-ink" for="termsCheck">
+                      <ng-container *ngIf="modalidad === 'sede'">
+                        Acepto los términos y el proceso de entrega física en PetHouse.
+                      </ng-container>
+                      <ng-container *ngIf="modalidad === 'hogar'">
+                        Acepto que los interesados me contacten y que el adoptante verifique el estado.
+                      </ng-container>
+                    </label>
+                  </div>
+                </div>
+
+                <button
+                  class="btn btn-publish-cartoon w-100 py-3"
+                  (click)="publishPet()"
+                  [disabled]="isSubmitting || !acceptedTerms"
+                >
+                  <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
+                  <i *ngIf="!isSubmitting" class="bi bi-send-fill me-2"></i>
+                  {{ isSubmitting ? 'Publicando...' : 'Enviar Publicación' }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Wizard Navigation -->
+          <hr class="my-4 border-2 border-light-gray" />
+          <div class="d-flex justify-content-between align-items-center mt-3">
+            <button *ngIf="currentStep > 1" class="btn btn-back-cartoon px-4 py-2" (click)="prevStep()">
+              <i class="bi bi-arrow-left me-1"></i> Volver
+            </button>
+            <div *ngIf="currentStep === 1"></div>
+            
+            <button *ngIf="currentStep < totalSteps" class="btn btn-next-cartoon px-4 py-2" (click)="nextStep()">
+              Siguiente <i class="bi bi-arrow-right ms-1"></i>
+            </button>
+          </div>
+
         </div>
       </div>
     </div>

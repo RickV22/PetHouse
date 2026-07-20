@@ -18,6 +18,7 @@ import autoTable from 'jspdf-autotable';
 export class AdminMascotasComponent implements OnInit, OnDestroy {
   pets: any[] = [];
   sortOrder = 'recent';
+  isLoading = true;
   private grid: any;
 
   private readonly statusMap: Record<string, { text: string; class: string }> = {
@@ -47,11 +48,14 @@ export class AdminMascotasComponent implements OnInit, OnDestroy {
   // }
 
   async loadPets(): Promise<void> {
+    this.isLoading = true;
     try {
       this.pets = await this.petService.getAllPets();
       setTimeout(() => this.renderGrid(), 0);
     } catch (error) {
       console.error('Error cargando mascotas:', error);
+    } finally {
+      this.isLoading = false;
     }
   }
 

@@ -51,6 +51,17 @@
   border-radius: 12px;
 }
 
+.legal-scroll-text {
+  max-height: 120px;
+  overflow-y: auto;
+  border: 2px solid var(--light-gray);
+  background: white;
+  padding: 12px;
+  border-radius: 10px;
+  line-height: 1.4;
+}
+
+
 .btn-publish-cartoon {
   background: var(--mustard);
   color: var(--ink);

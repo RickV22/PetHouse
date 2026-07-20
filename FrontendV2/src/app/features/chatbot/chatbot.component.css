@@ -381,3 +381,27 @@
   border-color: #c8c0b5;
   transform: none;
 }
+
+/* Responsive styles for chatbot */
+@media (max-width: 576px) {
+  .chat-btn {
+    width: 52px !important;
+    height: 52px !important;
+    padding: 0 !important;
+    justify-content: center !important;
+    bottom: 20px !important;
+    right: 20px !important;
+  }
+  
+  .chat-btn-label {
+    display: none !important;
+  }
+
+  .chat-window {
+    bottom: 84px !important;
+    right: 15px !important;
+    width: calc(100vw - 30px) !important;
+    max-height: 400px !important;
+  }
+}
+

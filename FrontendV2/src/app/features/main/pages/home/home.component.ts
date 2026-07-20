@@ -27,6 +27,7 @@ export class HomeComponent implements OnInit {
   pets: any[] = [];
   selectedPet: any = null;
   search = '';
+  isLoading = true;
   readonly MAX_PREVIEW = 8;
 
   constructor(
@@ -49,6 +50,7 @@ export class HomeComponent implements OnInit {
   }
 
   async loadPets(): Promise<void> {
+    this.isLoading = true;
     try {
       const allPets = await this.petService.getPets();
       this.allPets = Array.isArray(allPets) ? allPets : [];
@@ -58,6 +60,9 @@ export class HomeComponent implements OnInit {
       this.cdr.detectChanges();
     } catch (error) {
       console.error('Error cargando mascotas:', error);
+    } finally {
+      this.isLoading = false;
+      this.cdr.detectChanges();
     }
   }
 
