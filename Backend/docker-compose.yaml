@@ -93,6 +93,23 @@ services:
 
     restart: unless-stopped
 
+  telegram-bot:
+    build: .
+    container_name: telegram_bot_pet
+
+    command: ["python", "telegram_bot.py"]
+
+    env_file:
+      - .env
+
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+
+    depends_on:
+      - ollama
+
+    restart: unless-stopped
+
 volumes:
   postgres_data:
   ollama_data:
