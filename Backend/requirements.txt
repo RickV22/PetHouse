@@ -23,6 +23,7 @@ ollama
 groq
 PyYAML
 pypdf
+groq
 
 sqlglot
 mcp
