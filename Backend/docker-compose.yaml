@@ -1,45 +1,97 @@
 version: "3.10"
 
 services:
+
   web:
     build: .
     container_name: fastapi_app_pet
+
     ports:
       - "8000:8000"
+
     volumes:
       - ./:/app
+
     env_file:
       - .env
+
     depends_on:
       postgres:
         condition: service_healthy
+
       ollama:
         condition: service_started
+
+      mcp-toolbox:
+        condition: service_started
+
+    restart: unless-stopped
 
   postgres:
     image: postgres:16
     container_name: postgres_sql_pet
+
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: secret
       POSTGRES_DB: prueba
+
     ports:
       - "5432:5432"
+
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d prueba"]
       interval: 5s
       timeout: 5s
       retries: 10
 
+    restart: unless-stopped
+
+  mcp-toolbox:
+    image: us-central1-docker.pkg.dev/database-toolbox/toolbox/toolbox:1.6.0
+    container_name: mcp-toolbox
+
+    hostname: mcp-toolbox
+
+    platform: linux/amd64
+
+    ports:
+      - "5000:5000"
+
+    volumes:
+      - ./config:/config:ro
+
+    env_file:
+      - .env
+
+    command:
+      [
+        "--config",
+        "/config/tools.yaml",
+        "--address",
+        "0.0.0.0"
+      ]
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    restart: unless-stopped
+
   ollama:
     image: ollama/ollama
     container_name: ollama_pet
+
     ports:
       - "11434:11434"
+
     volumes:
       - ollama_data:/root/.ollama
+
+    restart: unless-stopped
 
 volumes:
   postgres_data:

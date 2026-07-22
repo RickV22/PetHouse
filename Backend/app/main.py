@@ -23,6 +23,7 @@ from app.routes.role_permission_routes import router as role_permission_router
 from app.routes.permission_routes import router as permission_router
 from app.routes.audit_log_routes import router as audit_log_router
 from app.routes.pet_health_routes import router as pet_health_router
+from app.ai.presentation.routers.ai_router import router as ai_router
 
 app = FastAPI()
 
@@ -94,6 +95,7 @@ app.include_router(role_permission_router)
 app.include_router(permission_router)
 app.include_router(audit_log_router)
 app.include_router(pet_health_router)
+app.include_router(ai_router)
 
 
 

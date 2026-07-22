@@ -1,0 +1,2 @@
+class SQLValidationError(Exception):
+    pass

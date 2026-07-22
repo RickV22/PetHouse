@@ -3,6 +3,8 @@ import sys
 import time
 import traceback
 import datetime
+import base64
+import re
 from sqlalchemy import func
 import requests
 from dotenv import load_dotenv
@@ -22,6 +24,10 @@ OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2")
 OLLAMA_MODEL_VISION = os.getenv("OLLAMA_MODEL_VISION", "moondream")
 
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.1-8b-instant")
+GROQ_MODEL_VISION = os.getenv("GROQ_MODEL_VISION", "qwen/qwen3.6-27b")
+
 # Importar sesión de base de datos y modelos del proyecto
 # Añadimos el directorio actual al path para importar correctamente app
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
@@ -33,6 +39,16 @@ from app.models.pet_medical_card_model import PetMedicalCard
 from app.models.pet_reminder_model import PetReminder
 from app.models.veterinary_chat_history_model import VeterinaryChatHistory
 
+# Importación opcional de groq
+try:
+    # pyrefly: ignore [missing-import]
+    from groq import Groq
+    GROQ_AVAILABLE = True
+except ImportError:
+    Groq = None
+    GROQ_AVAILABLE = False
+    print("[WARNING] La librería 'groq' no está instalada.")
+
 # Importación opcional de ollama
 try:
     # pyrefly: ignore [missing-import]
@@ -41,7 +57,7 @@ try:
 except ImportError:
     ollama = None
     OLLAMA_AVAILABLE = False
-    print("[WARNING] La librería 'ollama' no está instalada. El bot no podrá responder preguntas usando IA.")
+    print("[WARNING] La librería 'ollama' no está instalada. El bot no podrá responder preguntas usando IA local.")
 
 # Importación de pypdf
 try:
@@ -66,6 +82,51 @@ def send_message(chat_id, text):
         requests.post(url, json=payload, timeout=10)
     except Exception as e:
         print(f"[ERROR] No se pudo enviar mensaje a {chat_id}: {e}")
+
+
+def delete_message(chat_id, message_id):
+    """Eliminar un mensaje específico del chat de Telegram"""
+    url = f"{BOT_URL}/deleteMessage"
+    payload = {
+        "chat_id": chat_id,
+        "message_id": message_id
+    }
+    try:
+        requests.post(url, json=payload, timeout=5)
+    except Exception as e:
+        print(f"[ERROR] No se pudo eliminar el mensaje {message_id} en {chat_id}: {e}")
+
+
+def send_chat_action(chat_id, action="typing"):
+    """Enviar acción de estado al chat de Telegram (ej: typing)"""
+    url = f"{BOT_URL}/sendChatAction"
+    payload = {
+        "chat_id": chat_id,
+        "action": action
+    }
+    try:
+        requests.post(url, json=payload, timeout=5)
+    except Exception as e:
+        print(f"[ERROR] No se pudo enviar chat action a {chat_id}: {e}")
+
+
+def encode_image_to_base64(image_path):
+    """Convertir una imagen local a string base64 para Groq Vision API"""
+    try:
+        with open(image_path, "rb") as image_file:
+            return base64.b64encode(image_file.read()).decode('utf-8')
+    except Exception as e:
+        print(f"[ERROR] Error codificando imagen {image_path} a Base64: {e}")
+        return None
+
+
+def clean_ai_response(text):
+    """Limpiar la respuesta de la IA eliminando etiquetas de pensamiento interno como <think>...</think>"""
+    if not text:
+        return text
+    # Eliminar cualquier bloque de pensamiento <think>...</think>
+    cleaned = re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL).strip()
+    return cleaned
 
 
 def _get_due_reminder_notifications(reminders, now=None):
@@ -335,6 +396,71 @@ def get_rag_context(chat_id):
     finally:
         db.close()
 
+def query_groq_rag(context, query, history=None, images=None):
+    """Consultar a la API de Groq usando la información recuperada de la BD como contexto (Generación ultra rápida)"""
+    if not GROQ_AVAILABLE or not GROQ_API_KEY:
+        return None
+
+    system_prompt = f"""
+    Eres Togo, el asistente virtual de IA de PetHouse. Tu objetivo es responder dudas sobre las mascotas del usuario y analizar documentos (como PDFs o imágenes clínicas) que el usuario te envíe.
+    Si el usuario pregunta si puedes analizar un PDF, documento o imagen, debes responder que sí puedes analizarlo y que el usuario debe enviarlo para poder analizarlo.
+    Tienes acceso a la siguiente información REAL de las mascotas del usuario (Contexto RAG):
+    ------------------
+    {context}
+    ------------------
+    
+    Instrucciones críticas:
+    1. Responde a la pregunta del usuario utilizando los datos provistos en el contexto de las mascotas, los archivos adjuntos (si los hay) y el historial de conversación.
+    2. Si el usuario te pregunta por algo de su mascota que NO está en el contexto ni en los archivos/conversación (por ejemplo, vacunas que no figuran o alergias no mencionadas), dile de forma amigable que no tienes ese dato registrado en PetHouse.
+    3. Mantén respuestas concisas, amables y utiliza emojis adecuados (🐾, 🐶, 🐱, ❤️).
+    4. Responde en español de forma natural y lo más conciso posible.
+    5. NUNCA incluyas tus razonamientos internos ni bloques <think> en la respuesta final. Genera únicamente la respuesta directa para el usuario.
+    """
+    
+    messages = [
+        {'role': 'system', 'content': system_prompt.strip()}
+    ]
+    
+    if history:
+        for interaction in history:
+            messages.append({'role': 'user', 'content': interaction.question})
+            messages.append({'role': 'assistant', 'content': interaction.answer})
+            
+    if images:
+        content_payload = [{"type": "text", "text": query if query else "Analiza esta imagen de la mascota."}]
+        for img_path in images:
+            b64_str = encode_image_to_base64(img_path)
+            if b64_str:
+                content_payload.append({
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:image/jpeg;base64,{b64_str}"
+                    }
+                })
+        user_msg = {'role': 'user', 'content': content_payload}
+        model_to_use = GROQ_MODEL_VISION
+    else:
+        user_msg = {'role': 'user', 'content': query}
+        model_to_use = GROQ_MODEL
+
+    messages.append(user_msg)
+
+    try:
+        client = Groq(api_key=GROQ_API_KEY)
+        response = client.chat.completions.create(
+            model=model_to_use,
+            messages=messages,
+            temperature=0.5,
+            max_tokens=500
+        )
+        raw_text = response.choices[0].message.content
+        return clean_ai_response(raw_text)
+    except Exception as e:
+        print(f"[ERROR] Error al invocar Groq (model={model_to_use}): {e}")
+        traceback.print_exc()
+        return None
+
+
 def query_ollama_rag(context, query, history=None, images=None):
     """Consultar a Ollama usando la información recuperada de la BD como contexto (Generation)"""
     if not OLLAMA_AVAILABLE:
@@ -390,20 +516,37 @@ def query_ollama_rag(context, query, history=None, images=None):
                 'num_predict': 400
             }
         )
-        return response['message']['content']
+        raw_text = response['message']['content']
+        return clean_ai_response(raw_text)
     except Exception as e:
         print(f"[ERROR] Error al invocar Ollama (host={OLLAMA_HOST}, model={model_to_use}): {e}")
         if images and ("vision" in str(e).lower() or "image" in str(e).lower() or "format" in str(e).lower()):
             return f"⚠️ Recibí tu imagen, pero el modelo de IA de visión configurado (`{model_to_use}`) no parece responder correctamente o no está descargado. Asegúrate de haber ejecutado 'ollama pull {model_to_use}' en tu servidor Ollama."
         return "🐾 Lo siento, estoy teniendo problemas para procesar tu consulta con mi IA. ¿Puedes intentar más tarde?"
+    
+
+def query_ai_rag(context, query, history=None, images=None):
+    """Consultar a la IA: intenta con Groq API primero (ultra rápido); si no hay API Key o falla, usa Ollama como fallback"""
+    if GROQ_API_KEY and GROQ_AVAILABLE:
+        print(f"[INFO] Consultando a Groq API...")
+        groq_reply = query_groq_rag(context, query, history=history, images=images)
+        if groq_reply:
+            return groq_reply
+        print("[WARNING] Groq no retornó respuesta. Intentando fallback con Ollama local...")
+    
+    return query_ollama_rag(context, query, history=history, images=images)
 
 
-def handle_message(chat_id, text="", photo=None, document=None):
+def handle_message(chat_id, text="", photo=None, document=None, message_id=None):
     """Manejar mensajes entrantes en Telegram, incluyendo textos, fotos y documentos"""
     text_clean = text.strip() if text else ""
     
     # Manejar comando /start (solo si no se enviaron archivos)
     if text_clean.startswith("/start") and not photo and not document:
+        # Borrar el mensaje /start del chat para mantener la interfaz limpia
+        if message_id:
+            delete_message(chat_id, message_id)
+
         parts = text_clean.split()
         if len(parts) > 1:
             response_msg = link_user(chat_id, parts[1])
@@ -411,8 +554,8 @@ def handle_message(chat_id, text="", photo=None, document=None):
         else:
             welcome_msg = (
                 "👋 ¡Hola! Soy Togo, el asistente virtual de **PetHouse**.\n\n"
-                "Para recibir aquí tus recordatorios de salud y hacerme preguntas sobre tus mascotas, "
-                "debes vincular tu cuenta. Inicia sesión en la plataforma web de PetHouse, ve a la sección de veterinario y haz clic en el botón 'Vincular Telegram'. 🐾"
+                "Puedo ayudarte a recordar citas de tus mascotas, responder tus dudas y **analizar documentos PDF o imágenes clínicas** que me envíes. 📄📸\n\n"
+                "Para comenzar, vincula tu cuenta desde la plataforma web de PetHouse (sección veterinario > 'Vincular Telegram'). 🐾"
             )
             send_message(chat_id, welcome_msg)
         return
@@ -504,8 +647,11 @@ def handle_message(chat_id, text="", photo=None, document=None):
         # 3. Obtener Historial de Chat (Memoria)
         history = get_chat_history(db, user.id, limit=8)
 
-        # 4. Consultar a Ollama con Contexto RAG, Historial y Archivos
-        reply = query_ollama_rag(context, current_query, history=history, images=images_list)
+        # Indicar estado de escritura en Telegram para feedback inmediato
+        send_chat_action(chat_id, "typing")
+
+        # 4. Consultar a la IA (Groq API principal, Ollama fallback)
+        reply = query_ai_rag(context, current_query, history=history, images=images_list)
         
         # Enviar respuesta
         send_message(chat_id, reply)
@@ -586,10 +732,11 @@ def main():
                             text = msg.get("text") or msg.get("caption") or ""
                             photo = msg.get("photo")
                             document = msg.get("document")
+                            message_id = msg.get("message_id")
                             
                             if text or photo or document:
                                 print(f"[Mensaje recibido] Chat ID: {chat_id} | Texto: {text[:20]}... | Foto: {bool(photo)} | Doc: {bool(document)}")
-                                handle_message(chat_id, text=text, photo=photo, document=document)
+                                handle_message(chat_id, text=text, photo=photo, document=document, message_id=message_id)
             else:
                 print(f"[WARNING] Error en polling. Status code: {r.status_code}")
                 time.sleep(5)

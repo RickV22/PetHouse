@@ -1,0 +1,57 @@
+schema: spec-driven
+
+context:
+  project: PetHouse
+
+  description: >
+    AI-powered pet adoption and veterinary management platform.
+
+  stack:
+    backend:
+      - FastAPI
+      - SQLAlchemy
+      - Alembic
+      - JWT
+
+    frontend:
+      - Angular 21
+      - SvelteKit 2
+
+    database:
+      development: SQLite
+      production: PostgreSQL
+
+    ai:
+      current:
+        - Ollama
+      planned:
+        - Open WebUI
+        - MCP
+        - Groq
+
+  architecture:
+    style: Clean Architecture
+    api: REST
+    configuration: YAML
+
+rules:
+
+  proposal:
+    - Include Goals
+    - Include Non-Goals
+    - Include Risks
+    - Include Migration Plan
+
+  design:
+    - Business logic must not depend on FastAPI.
+    - Infrastructure must be replaceable.
+    - All external providers must be abstracted behind interfaces.
+    - Prefer dependency injection.
+
+  spec:
+    - Keep requirements implementation-agnostic.
+    - Every capability must define acceptance criteria.
+
+  tasks:
+    - Split work into tasks under 2 hours.
+    - Define completion criteria for every task.

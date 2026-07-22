@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 import { AdminHistorialComponent } from './historial.component';
@@ -10,6 +11,7 @@ describe('AdminHistorialComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [AdminHistorialComponent, HttpClientTestingModule],
+      providers: [provideRouter([])],
     }).compileComponents();
 
     fixture = TestBed.createComponent(AdminHistorialComponent);

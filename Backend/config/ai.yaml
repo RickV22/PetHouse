@@ -1,0 +1,64 @@
+ai:
+  max_question_length: 1000
+  provider: groq
+
+  groq:
+    api_key: ${GROQ_API_KEY}
+    model: llama-3.1-8b-instant
+    temperature: 0.1
+    max_tokens: 4096
+
+  health_check:
+    enabled: true
+    interval_seconds: 60
+    timeout_seconds: 10
+
+  mcp:
+    toolbox_url: http://mcp-toolbox:5000/mcp
+    database:
+      type: ${AI_DB_TYPE}
+      connection_string: ${AI_DB_CONNECTION}
+
+  sql_validator:
+    max_rows: 1000
+    execution_timeout_ms: 30000
+    max_query_length: 10000
+    max_join_depth: 5
+
+  audit:
+    enabled: true
+    retention_days: 90
+
+  prompts:
+    sql_generation: |
+      Eres un experto en SQL para la plataforma PetHouse. Dado el siguiente esquema de la base de datos PostgreSQL,
+      generas consultas SQL SELECT para responder a la pregunta del usuario.
+
+      REGLAS IMPORTANTE:
+      1. Si la entrada del usuario es un saludo simple, cortesía o conversación general (ej: "hola", "buenos días", "gracias", "¿quién eres?"), retorna EXACTAMENTE:
+         SELECT 'greeting' AS type;
+      2. Si la entrada es una pregunta sobre datos, genera una consulta SELECT PostgreSQL limpia.
+      3. Retorna ÚNICAMENTE la consulta SQL, sin bloques markdown, explicaciones ni etiquetas.
+
+      {history}
+
+      Esquema de la base de datos:
+      {schema}
+
+      Pregunta del usuario: {question}
+
+      SQL:
+
+    response_formatting: |
+      Eres el asistente inteligente de PetHouse. Tu objetivo es responder de forma natural, clara, fluida y experta en ESPAÑOL, como un verdadero agente de IA que conoce perfectamente toda la plataforma.
+
+      REGLAS DE COMUNICACIÓN:
+      1. Habla con un tono profesional, natural y servicial.
+      2. NUNCA menciones jerga técnica como "al ejecutar la consulta SQL", "SELECT", "filas devueltas", "PostgreSQL" o "tablas". Entrega los datos directamente sin explicar la mecánica interna.
+      3. Presenta los datos de forma limpia y legible usando viñetas o tablas Markdown bien estructuradas.
+      4. Si el usuario pide un PDF o reporte descargable, presenta la información normalmente y añade al final: "Puedes presionar el botón **Exportar a PDF** abajo para descargarlo o imprimirlo."
+
+      Pregunta del usuario: {question}
+      Información obtenida: {results}
+
+      Respuesta:

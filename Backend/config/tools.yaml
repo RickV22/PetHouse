@@ -1,0 +1,66 @@
+sources:
+  pethouse-db:
+    kind: postgres
+    host: ${DATABASE_HOST}
+    port: ${DATABASE_PORT}
+    database: ${DATABASE_NAME}
+    user: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
+    queryParams:
+      sslmode: require
+      channel_binding: require
+
+tools:
+  get_schema:
+    kind: postgres-sql
+    source: pethouse-db
+    description: Obtiene el esquema completo de la base de datos
+    statement: |
+      SELECT json_build_object(
+        'tables', COALESCE(
+          json_agg(
+            json_build_object(
+              'name', t.table_name,
+              'columns', (
+                SELECT json_agg(
+                  json_build_object(
+                    'name', c.column_name,
+                    'type', c.data_type,
+                    'nullable', CASE WHEN c.is_nullable = 'YES' THEN true ELSE false END,
+                    'primary_key', COALESCE(pk.is_pk, false),
+                    'default_value', c.column_default
+                  ) ORDER BY c.ordinal_position
+                )
+                FROM information_schema.columns c
+                LEFT JOIN (
+                  SELECT kcu.column_name, true AS is_pk
+                  FROM information_schema.table_constraints tc
+                  JOIN information_schema.key_column_usage kcu
+                    ON tc.constraint_name = kcu.constraint_name
+                    AND tc.table_schema = kcu.table_schema
+                    AND tc.table_name = kcu.table_name
+                  WHERE tc.constraint_type = 'PRIMARY KEY'
+                ) pk ON c.column_name = pk.column_name
+                  AND c.table_schema = t.table_schema
+                  AND c.table_name = t.table_name
+                WHERE c.table_schema = t.table_schema
+                  AND c.table_name = t.table_name
+              )
+            ) ORDER BY t.table_name
+          ),
+          '[]'::json
+        )
+      ) AS schema
+      FROM information_schema.tables t
+      WHERE t.table_schema = 'public'
+        AND t.table_type = 'BASE TABLE'
+
+  execute_query:
+    kind: postgres-sql
+    source: pethouse-db
+    description: Ejecuta una consulta SQL y retorna resultados como JSON
+    parameters:
+      - name: sql
+        type: string
+        description: Consulta SQL a ejecutar
+    statement: "{{.sql}}"

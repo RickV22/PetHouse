@@ -1,0 +1,191 @@
+<app-admin-navbar />
+
+<main class="ai-container py-4">
+  <div class="container-fluid px-lg-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h1 class="display-6 fw-bold text-dark mb-1">
+          <i class="bi bi-robot text-primary me-2"></i>Asistente PetHouse
+        </h1>
+        <p class="text-muted mb-0">
+          Consulta información, reportes y estadísticas de la plataforma al instante
+        </p>
+      </div>
+      <div class="d-flex gap-2">
+        <button
+          class="btn btn-outline-secondary btn-sm rounded-pill px-3"
+          (click)="clearChat()"
+        >
+          <i class="bi bi-plus-circle"></i> Nueva conversación
+        </button>
+        <button
+          class="btn btn-outline-primary btn-sm rounded-pill px-3 d-lg-none"
+          (click)="showHistory = !showHistory"
+        >
+          <i class="bi bi-clock-history"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <!-- Chat Area -->
+      <div class="col-lg-8 col-xl-9">
+        <div class="chat-card bg-white shadow-sm rounded-4 overflow-hidden border-0 d-flex flex-column">
+          <!-- Messages -->
+          <div class="chat-messages p-4 flex-grow-1 overflow-auto" #messageContainer>
+            @if (messages.length === 0) {
+              <div class="text-center text-muted py-5">
+                <i class="bi bi-chat-dots fs-1 d-block mb-2"></i>
+                <p class="mb-0">Inicia una conversación con el asistente SQL</p>
+              </div>
+            }
+
+            @for (msg of messages; track msg.timestamp; let i = $index) {
+              <div
+                class="message-bubble mb-3"
+                [class.user-message]="msg.role === 'user'"
+                [class.assistant-message]="msg.role === 'assistant'"
+              >
+                <div class="d-flex align-items-start gap-2">
+                  <div
+                    class="avatar-icon rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                    [class.bg-primary-subtle]="msg.role === 'assistant'"
+                    [class.bg-secondary-subtle]="msg.role === 'user'"
+                  >
+                    @if (msg.role === 'assistant') {
+                      <i class="bi bi-robot text-primary"></i>
+                    } @else {
+                      <i class="bi bi-person text-secondary"></i>
+                    }
+                  </div>
+                  <div class="message-content flex-grow-1">
+                    <div
+                      class="message-text p-3 rounded-4"
+                      [class.bg-light]="msg.role === 'assistant'"
+                      [class.bg-primary]="msg.role === 'user'"
+                      [class.text-white]="msg.role === 'user'"
+                    >
+                      <p class="mb-0">{{ msg.content }}</p>
+                    </div>
+
+                    @if (msg.role === 'assistant') {
+                      <div class="mt-2 d-flex align-items-center justify-content-end">
+                        <button
+                          class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 text-nowrap"
+                          (click)="exportPdf(msg)"
+                          title="Descargar o imprimir reporte en PDF"
+                        >
+                          <i class="bi bi-file-earmark-pdf me-1"></i> Exportar a PDF
+                        </button>
+                      </div>
+                    }
+                  </div>
+                </div>
+              </div>
+            }
+
+            @if (loading) {
+              <div class="message-bubble assistant-message mb-3">
+                <div class="d-flex align-items-start gap-2">
+                  <div
+                    class="avatar-icon rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 bg-primary-subtle"
+                  >
+                    <i class="bi bi-robot text-primary"></i>
+                  </div>
+                  <div class="message-content">
+                    <div class="message-text p-3 rounded-4 bg-light">
+                      <div class="typing-indicator">
+                        <span></span><span></span><span></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- Error -->
+          @if (error) {
+            <div class="alert alert-danger mx-4 mb-0 rounded-3" role="alert">
+              <i class="bi bi-exclamation-triangle me-1"></i>
+              {{ error }}
+            </div>
+          }
+
+          <!-- Input -->
+          <div class="chat-input p-3 border-top bg-white flex-shrink-0 w-100">
+            <div class="input-group flex-nowrap w-100">
+              <input
+                #chatInput
+                type="text"
+                class="form-control form-control-lg rounded-start-4 border border-secondary-subtle shadow-sm custom-chat-input"
+                placeholder="Escribe tu pregunta o solicita un reporte..."
+                [(ngModel)]="question"
+                (keydown.enter)="$event.preventDefault(); send(chatInput)"
+                [disabled]="loading"
+              />
+              <button
+                class="btn btn-primary rounded-end-4 px-4 shadow-sm flex-shrink-0"
+                (click)="send(chatInput)"
+                [disabled]="loading || !question.trim()"
+              >
+                @if (loading) {
+                  <span class="spinner-border spinner-border-sm" role="status"></span>
+                } @else {
+                  <i class="bi bi-send-fill"></i>
+                }
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- History Sidebar -->
+      @if (showHistory) {
+        <div class="col-lg-4 col-xl-3">
+          <div class="history-card bg-white shadow-sm rounded-4 overflow-hidden border-0">
+            <div class="history-header p-3 border-bottom d-flex justify-content-between align-items-center">
+              <h5 class="mb-0 fw-bold">
+                <i class="bi bi-clock-history me-2"></i>Historial
+              </h5>
+              <span class="badge bg-primary rounded-pill">{{ history.length }}</span>
+            </div>
+            <div class="history-body p-2 overflow-auto" style="max-height: 60vh">
+              @if (history.length === 0) {
+                <div class="text-center text-muted py-4">
+                  <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                  <small>Sin consultas previas</small>
+                </div>
+              }
+
+              @for (item of history; track item.id) {
+                <div
+                  class="history-item p-3 rounded-3 mb-1 cursor-pointer"
+                  (click)="selectHistoryItem(item)"
+                >
+                  <div class="d-flex justify-content-between align-items-start mb-1">
+                    <small class="fw-semibold text-truncate d-block me-2">
+                      {{ item.question }}
+                    </small>
+                    <small class="text-muted flex-shrink-0">
+                      {{ item.created_at | date: 'short' }}
+                    </small>
+                  </div>
+                  <p class="text-muted small mb-0 text-truncate">
+                    {{ item.answer }}
+                  </p>
+                  @if (item.generated_sql) {
+                    <span class="badge bg-warning-subtle text-warning-emphasis mt-1">
+                      <i class="bi bi-code-slash me-1"></i>SQL
+                    </span>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</main>

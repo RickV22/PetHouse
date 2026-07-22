@@ -12,6 +12,7 @@ import { AdminDashboardComponent } from './features/admin/pages/dashboard/dashbo
 import { AdminHistorialComponent } from './features/admin/pages/historial/historial.component';
 import { AdminMascotasComponent } from './features/admin/pages/mascotas/mascotas.component';
 import { AdminAdopcionComponent } from './features/admin/pages/adopcion/adopcion.component';
+import { AiAssistantComponent } from './features/admin/pages/ai-assistant/ai-assistant.component';
 import { PoliticaDatosComponent } from './features/main/pages/politica-datos/politica-datos.component';
 
 export const routes: Routes = [
@@ -31,6 +32,7 @@ export const routes: Routes = [
       { path: 'mascotas', component: AdminMascotasComponent },
       { path: 'adopcion', component: AdminAdopcionComponent },
       { path: 'historial', component: AdminHistorialComponent },
+      { path: 'ai-assistant', component: AiAssistantComponent },
     ],
   },
 ];
