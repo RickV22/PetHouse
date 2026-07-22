@@ -5,6 +5,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+DEFAULT_NEON_URL = (
+    "postgresql://neondb_owner:npg_ReiUD27Fftnw"
+    "@ep-damp-block-ai81i5p8-pooler.c-4.us-east-1.aws.neon.tech"
+    ":5432/neondb?sslmode=require&channel_binding=require"
+)
+
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 if not DATABASE_URL:
@@ -21,7 +27,7 @@ if not DATABASE_URL:
             "?sslmode=require&channel_binding=require"
         )
     else:
-        DATABASE_URL = "sqlite:///./pet_house.db"
+        DATABASE_URL = DEFAULT_NEON_URL
 
 print("DATABASE_URL:", DATABASE_URL)
 
