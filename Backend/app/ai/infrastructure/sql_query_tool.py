@@ -39,12 +39,15 @@ class SqlQueryTool(AITool):
         result = await self._mcp_client.execute_query(sql)
 
         return AIResponse(
-            content=json.dumps({
-                "columns": result.columns,
-                "rows": [list(r) for r in result.rows],
-                "row_count": result.row_count,
-                "execution_ms": result.execution_ms,
-            })
+            content=json.dumps(
+                {
+                    "columns": result.columns,
+                    "rows": [list(r) for r in result.rows],
+                    "row_count": result.row_count,
+                    "execution_ms": result.execution_ms,
+                },
+                default=str,
+            )
         )
 
     def description(self) -> str:

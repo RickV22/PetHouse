@@ -1,5 +1,6 @@
 import asyncio
 import traceback
+from datetime import timedelta
 from typing import Any, Dict, List, Optional, Tuple
 
 import httpx
@@ -38,17 +39,19 @@ class MCPToolboxClient(MCPClient):
         print("LLAMANDO A get_schema")
         print("=" * 80)
 
-        raw = await self._call_tool("get_schema", {})
+        schema = DatabaseSchema(tables=[])
+        try:
+            raw = await self._call_tool("get_schema", {})
+            schema = self._parse_schema(raw)
+        except Exception as e:
+            print(f"Error obteniendo esquema vía MCP Toolbox ({e}). Usando conexión directa...")
+
+        if not schema.tables:
+            print("Esquema vía MCP vacío. Ejecutando consulta directa a information_schema...")
+            schema = await self._get_direct_schema()
 
         print("=" * 80)
-        print("RESPUESTA CRUDA DEL TOOLBOX (get_schema)")
-        print(raw)
-        print("=" * 80)
-
-        schema = self._parse_schema(raw)
-
-        print("=" * 80)
-        print("SCHEMA PARSEADO")
+        print("SCHEMA PARSEADO FINAL")
         print(schema)
         print("=" * 80)
 
@@ -73,7 +76,7 @@ class MCPToolboxClient(MCPClient):
             )
 
         print("=" * 80)
-        print("SQL ENVIADO AL TOOLBOX")
+        print("SQL ENVIADO AL TOOLBOX / DB")
         print(sql)
         print("=" * 80)
 
@@ -83,38 +86,12 @@ class MCPToolboxClient(MCPClient):
                 {
                     "sql": sql,
                     "max_rows": validation.max_rows,
-                    "execution_timeout_ms": validation.execution_timeout_ms,
                 },
             )
-
-            print("=" * 80)
-            print("RESPUESTA CRUDA DEL TOOLBOX (execute_query)")
-            print(raw)
-            print("=" * 80)
-
-        except asyncio.TimeoutError:
-            raise MCPTimeoutError("MCP query execution timed out")
-
-        except (ConnectionError, OSError) as e:
-            raise MCPConnectionError(f"MCP connection failed: {e}")
-
-        except RuntimeError as e:
-            print("=" * 80)
-            print("ERROR DEVUELTO POR EL TOOLBOX")
-            print(str(e))
-            traceback.print_exc()
-            print("=" * 80)
-            raise MCPExecutionError(str(e))
-
+            result = self._parse_query_result(raw)
         except Exception as e:
-            print("=" * 80)
-            print("EXCEPCIÓN GENERAL")
-            print(repr(e))
-            traceback.print_exc()
-            print("=" * 80)
-            raise MCPExecutionError(f"MCP execution failed: {e}")
-
-        result = self._parse_query_result(raw)
+            print(f"MCP Toolbox falló ({e}). Ejecutando consulta directamente en PostgreSQL...")
+            result = await self._execute_direct_sql(sql, validation.max_rows)
 
         print("=" * 80)
         print("QUERY RESULT PARSEADO")
@@ -122,6 +99,91 @@ class MCPToolboxClient(MCPClient):
         print("=" * 80)
 
         return result
+
+    async def _execute_direct_sql(self, sql: str, max_rows: int) -> QueryResult:
+        import time
+        from sqlalchemy import text
+        from app.db.session import SessionLocal
+
+        start = time.time()
+        clean_sql = sql.rstrip(";\n\r\t ")
+        limited_sql = f"SELECT * FROM ({clean_sql}) AS _tmp LIMIT {max_rows}"
+
+        def _run():
+            db = SessionLocal()
+            try:
+                res = db.execute(text(limited_sql))
+                cols = list(res.keys()) if res.returns_rows else []
+                rows = [tuple(r) for r in res.fetchall()] if res.returns_rows else []
+                return cols, rows
+            finally:
+                db.close()
+
+        cols, rows = await asyncio.to_thread(_run)
+        execution_ms = int((time.time() - start) * 1000)
+
+        return QueryResult(
+            columns=cols,
+            rows=rows,
+            row_count=len(rows),
+            execution_ms=execution_ms,
+        )
+
+    async def _get_direct_schema(self) -> DatabaseSchema:
+        from sqlalchemy import text
+        from app.db.session import SessionLocal
+
+        sql = """
+        SELECT json_build_object(
+          'tables', COALESCE(
+            json_agg(
+              json_build_object(
+                'name', t.table_name,
+                'columns', (
+                  SELECT json_agg(
+                    json_build_object(
+                      'name', c.column_name,
+                      'type', c.data_type,
+                      'nullable', CASE WHEN c.is_nullable = 'YES' THEN true ELSE false END,
+                      'primary_key', COALESCE(pk.is_pk, false),
+                      'default_value', c.column_default
+                    ) ORDER BY c.ordinal_position
+                  )
+                  FROM information_schema.columns c
+                  LEFT JOIN (
+                    SELECT kcu.column_name, true AS is_pk
+                    FROM information_schema.table_constraints tc
+                    JOIN information_schema.key_column_usage kcu
+                      ON tc.constraint_name = kcu.constraint_name
+                      AND tc.table_schema = kcu.table_schema
+                      AND tc.table_name = kcu.table_name
+                    WHERE tc.constraint_type = 'PRIMARY KEY'
+                  ) pk ON c.column_name = pk.column_name
+                    AND c.table_schema = t.table_schema
+                    AND c.table_name = t.table_name
+                  WHERE c.table_schema = t.table_schema
+                    AND c.table_name = t.table_name
+                )
+              ) ORDER BY t.table_name
+            ),
+            '[]'::json
+          )
+        ) AS schema
+        FROM information_schema.tables t
+        WHERE t.table_schema = 'public'
+          AND t.table_type = 'BASE TABLE';
+        """
+
+        def _run():
+            db = SessionLocal()
+            try:
+                res = db.execute(text(sql)).fetchone()
+                return res[0] if res else {}
+            finally:
+                db.close()
+
+        raw = await asyncio.to_thread(_run)
+        return self._parse_schema(raw)
 
     async def _call_tool(self, tool_name: str, arguments: Dict[str, Any]) -> Any:
         print("=" * 80)
@@ -140,7 +202,7 @@ class MCPToolboxClient(MCPClient):
                 async with ClientSession(
                     streams[0],
                     streams[1],
-                    read_timeout_seconds=self._timeout,
+                    read_timeout_seconds=timedelta(seconds=self._timeout),
                 ) as session:
                     try:
                         await session.initialize()
@@ -320,11 +382,13 @@ class MCPToolboxClient(MCPClient):
             return None
 
         columns: List[ColumnMetadata] = []
+        seen_cols = set()
 
         for col in raw.get("columns", []):
             column = self._parse_column(col)
 
-            if column is not None:
+            if column is not None and column.name not in seen_cols:
+                seen_cols.add(column.name)
                 columns.append(column)
 
         return TableMetadata(

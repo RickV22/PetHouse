@@ -52,39 +52,33 @@ class PromptTemplateImpl(PromptTemplate):
 
         parts: List[str] = []
         for table in schema.tables:
-            parts.append(f"Table: {table.name}")
-            if table.description:
-                parts.append(f"  Description: {table.description}")
-            parts.append("  Columns:")
+            cols = []
             for col in table.columns:
-                col_str = f"    - {col.name} ({col.type}"
+                c_str = f"{col.name} ({col.type}"
                 if col.is_primary_key:
-                    col_str += ", PK"
-                if not col.nullable:
-                    col_str += ", NOT NULL"
-                else:
-                    col_str += ", nullable"
+                    c_str += ", PK"
                 if col.foreign_key:
-                    col_str += f", FK → {col.foreign_key}"
-                if col.default_value is not None:
-                    col_str += f", default: {col.default_value}"
-                col_str += ")"
-                parts.append(col_str)
-            parts.append("")
+                    c_str += f", FK->{col.foreign_key}"
+                c_str += ")"
+                cols.append(c_str)
+            parts.append(f"Tabla `{table.name}`: {', '.join(cols)}")
 
-        return "\n".join(parts).strip()
+        return "\n".join(parts)
 
     def _format_history(self, history: List[AIInteraction]) -> str:
         if not history:
             return ""
 
-        parts: List[str] = ["## Previous conversation"]
-        for interaction in history:
-            parts.append(f"Question: {interaction.question}")
+        # Solo incluir las últimas 3 interacciones para ahorrar consumo de tokens
+        recent = history[-3:]
+        parts: List[str] = ["## Conversaciones recientes"]
+        for interaction in recent:
+            parts.append(f"Pregunta: {interaction.question}")
             if interaction.generated_sql:
                 parts.append(f"SQL: {interaction.generated_sql}")
             if interaction.response:
-                parts.append(f"Answer: {interaction.response}")
+                resp = interaction.response[:150] + "..." if len(interaction.response) > 150 else interaction.response
+                parts.append(f"Respuesta: {resp}")
             parts.append("")
 
         return "\n".join(parts).strip()
@@ -96,9 +90,12 @@ class PromptTemplateImpl(PromptTemplate):
         header = " | ".join(str(c) for c in result.columns)
         lines: List[str] = [f"Columns: {header}"]
 
-        for row in result.rows:
+        for row in result.rows[:15]:
             values = " | ".join(str(v) for v in row)
             lines.append(values)
+
+        if len(result.rows) > 15:
+            lines.append(f"... ({len(result.rows) - 15} filas más no mostradas en el prompt)")
 
         lines.append(
             f"{result.row_count} row(s) returned ({result.execution_ms}ms)"

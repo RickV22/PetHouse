@@ -6,10 +6,10 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
       <div>
         <h1 class="display-6 fw-bold text-dark mb-1">
-          <i class="bi bi-robot text-primary me-2"></i>Asistente SQL
+          <i class="bi bi-robot text-primary me-2"></i>Asistente PetHouse
         </h1>
         <p class="text-muted mb-0">
-          Haz preguntas en lenguaje natural sobre los datos de PetHouse
+          Consulta información, reportes y estadísticas de la plataforma al instante
         </p>
       </div>
       <div class="d-flex gap-2">
@@ -69,34 +69,16 @@
                       <p class="mb-0">{{ msg.content }}</p>
                     </div>
 
-                    @if (msg.sql) {
-                      <div class="sql-block mt-2 border rounded-3 overflow-hidden">
-                        <div
-                          class="sql-header d-flex justify-content-between align-items-center px-3 py-2 bg-dark text-white small"
+                    @if (msg.role === 'assistant') {
+                      <div class="mt-2 d-flex align-items-center justify-content-end">
+                        <button
+                          class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 text-nowrap"
+                          (click)="exportPdf(msg)"
+                          title="Descargar o imprimir reporte en PDF"
                         >
-                          <span><i class="bi bi-code-slash me-1"></i>SQL Generado</span>
-                          <button
-                            class="btn btn-sm btn-outline-light border-0"
-                            (click)="copySql(msg.sql!, i)"
-                          >
-                            @if (copiedIndex === i) {
-                              <i class="bi bi-check-lg text-success"></i>
-                            } @else {
-                              <i class="bi bi-clipboard"></i>
-                            }
-                          </button>
-                        </div>
-                        <pre class="sql-body p-3 mb-0 bg-dark text-light"><code>{{ msg.sql }}</code></pre>
+                          <i class="bi bi-file-earmark-pdf me-1"></i> Exportar a PDF
+                        </button>
                       </div>
-                    }
-
-                    @if (msg.executionTime != null) {
-                      <small class="text-muted mt-1 d-block">
-                        <i class="bi bi-clock me-1"></i>{{ msg.executionTime }}ms
-                        @if (msg.provider) {
-                          · {{ msg.provider }}
-                        }
-                      </small>
                     }
                   </div>
                 </div>
@@ -132,19 +114,20 @@
           }
 
           <!-- Input -->
-          <div class="chat-input p-3 border-top bg-light">
-            <div class="input-group">
+          <div class="chat-input p-3 border-top bg-white flex-shrink-0 w-100">
+            <div class="input-group flex-nowrap w-100">
               <input
+                #chatInput
                 type="text"
-                class="form-control form-control-lg rounded-start-4 border-0 shadow-sm"
-                placeholder="Escribe tu pregunta en lenguaje natural..."
+                class="form-control form-control-lg rounded-start-4 border border-secondary-subtle shadow-sm custom-chat-input"
+                placeholder="Escribe tu pregunta o solicita un reporte..."
                 [(ngModel)]="question"
-                (keyup.enter)="send()"
+                (keydown.enter)="$event.preventDefault(); send(chatInput)"
                 [disabled]="loading"
               />
               <button
-                class="btn btn-primary rounded-end-4 px-4"
-                (click)="send()"
+                class="btn btn-primary rounded-end-4 px-4 shadow-sm flex-shrink-0"
+                (click)="send(chatInput)"
                 [disabled]="loading || !question.trim()"
               >
                 @if (loading) {

@@ -52,7 +52,7 @@ tools:
         )
       ) AS schema
       FROM information_schema.tables t
-      WHERE t.table_schema NOT IN ('pg_catalog', 'information_schema')
+      WHERE t.table_schema = 'public'
         AND t.table_type = 'BASE TABLE'
 
   execute_query:
@@ -60,15 +60,7 @@ tools:
     source: pethouse-db
     description: Ejecuta una consulta SQL y retorna resultados como JSON
     parameters:
-      - name: max_rows
-        type: integer
-        description: Número máximo de filas a retornar
       - name: sql
         type: string
         description: Consulta SQL a ejecutar
-      - name: execution_timeout_ms
-        type: integer
-        description: Timeout en milisegundos
-    statement: |
-      SET statement_timeout TO '{{.execution_timeout_ms}}';
-      SELECT * FROM ({{.sql}}) AS _tmp LIMIT $1;
+    statement: "{{.sql}}"

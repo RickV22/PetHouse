@@ -28,46 +28,51 @@ class QueryPlanner:
         print("INICIO plan_query()")
         print("=" * 80)
 
-        print("Obteniendo esquema...")
         schema = await self._schema_provider.get_database_schema()
-        print("✓ Esquema obtenido")
-
         context.database_schema = schema
 
-        print("Generando prompt...")
+        import re
+        import unicodedata
+
+        def normalize(text: str) -> str:
+            nfkd = unicodedata.normalize('NFKD', text)
+            no_accents = "".join([c for c in nfkd if not unicodedata.combining(c)])
+            return re.sub(r'[^\w\s]', '', no_accents.lower()).strip()
+
+        clean_q = normalize(question)
+        greetings = {
+            "hola", "buenas", "buenos dias", "buenas tardes", "buenas noches",
+            "saludos", "hi", "hello", "que tal", "como estas", "quien eres",
+            "hola buenas", "hola que tal", "hola como estas"
+        }
+
+        is_simple_greeting = clean_q in greetings or any(clean_q.startswith(g + " ") for g in {"hola", "buenas", "saludos", "hi", "hello"})
+        is_query_intent = any(w in clean_q for w in ["mascota", "usuario", "adopcion", "rol", "permiso", "cuanto", "cuanta", "cuantos", "cuantas", "lista", "busca", "mostrar", "muestrame", "ver", "registrad", "id", "tabla"])
+
+        if is_simple_greeting and not is_query_intent and len(clean_q.split()) <= 4:
+            sql = "SELECT 'greeting' AS type"
+            print("Detectado saludo -> Usando consulta directa de bienvenida")
+            return PlannedQuery(
+                sql=sql,
+                schema=schema,
+                prompt="Greeting detection",
+            )
+
+        print("Generando prompt para consulta de datos...")
         prompt = self._prompt_template.render_sql_prompt(
             question=question,
             schema=schema,
             context=context,
         )
 
-        print("=" * 80)
-        print("PROMPT ENVIADO A GROQ")
-        print("=" * 80)
-        print(prompt)
-        print("=" * 80)
-
-        print("ANTES DE LLAMAR A GROQ")
-
         ai_response = await self._ai_provider.generate(
             AIRequest(prompt=prompt)
         )
 
-        print("DESPUÉS DE LLAMAR A GROQ")
-
-        print("=" * 80)
-        print("RESPUESTA COMPLETA DEL LLM")
-        print("=" * 80)
-        print(ai_response.content)
-        print("=" * 80)
-
         sql = self._extract_sql(ai_response.content)
 
-        print("=" * 80)
-        print("SQL EXTRAÍDO")
-        print("=" * 80)
-        print(sql)
-        print("=" * 80)
+        if not sql:
+            sql = "SELECT 'greeting' AS type"
 
         return PlannedQuery(
             sql=sql,
@@ -83,6 +88,13 @@ class QueryPlanner:
         context: AIExecutionContext,
     ) -> str:
 
+        if "SELECT 'greeting' AS type" in sql:
+            return (
+                "¡Hola! Soy tu asistente SQL de PetHouse. 🐾\n"
+                "¿En qué te puedo ayudar hoy? Puedo consultar información sobre mascotas, "
+                "usuarios, solicitudes de adopción o registros del sistema."
+            )
+
         prompt = self._prompt_template.render_response_prompt(
             question=question,
             sql=sql,
@@ -90,50 +102,34 @@ class QueryPlanner:
             context=context,
         )
 
-        print("=" * 80)
-        print("PROMPT DE RESPUESTA")
-        print("=" * 80)
-        print(prompt)
-        print("=" * 80)
-
         ai_response = await self._ai_provider.generate(
             AIRequest(prompt=prompt)
         )
 
-        print("=" * 80)
-        print("RESPUESTA FINAL DEL LLM")
-        print("=" * 80)
-        print(ai_response.content)
-        print("=" * 80)
-
-        return ai_response.content
+        cleaned_response = re.sub(r"(?s)<think>.*?</think>", "", ai_response.content).strip()
+        return cleaned_response
 
     def _extract_sql(self, content: str) -> str:
         cleaned = content.strip()
 
-        # Eliminar bloques Markdown
-        cleaned = re.sub(
-            r"^```sql\s*", "", cleaned, flags=re.IGNORECASE
-        )
-        cleaned = re.sub(r"^```\s*", "", cleaned)
-        cleaned = re.sub(r"\s*```$", "", cleaned)
+        # 1. Eliminar etiquetas <think>...</think>
+        cleaned = re.sub(r"(?s)<think>.*?</think>", "", cleaned).strip()
 
-        # Eliminar etiquetas XML/HTML
-        cleaned = re.sub(
-            r"</?sql>", "", cleaned, flags=re.IGNORECASE
-        )
-        cleaned = re.sub(
-            r"</?query>", "", cleaned, flags=re.IGNORECASE
-        )
+        # 2. Si el SQL está en un bloque de código Markdown ```sql ... ```
+        code_block_match = re.search(r"```(?:sql)?\s*(.*?)\s*```", cleaned, re.DOTALL | re.IGNORECASE)
+        if code_block_match:
+            cleaned = code_block_match.group(1).strip()
 
-        # Buscar el primer SELECT
-        match = re.search(
-            r"(?is)\bSELECT\b.*?;?\s*$",
-            cleaned,
-        )
+        # 3. Eliminar etiquetas XML específicas de envoltorio (<sql>, </sql>, <query>, </query>)
+        cleaned = re.sub(r"</?(?:sql|query)>", "", cleaned, flags=re.IGNORECASE).strip()
 
+        # 4. Extraer desde el primer SELECT o WITH hasta el primer punto y coma ';' (o fin de instrucción)
+        match = re.search(r"(?is)\b(SELECT|WITH)\b.*?(?:;|$)", cleaned)
         if match:
-            cleaned = match.group(0)
+            cleaned = match.group(0).strip()
+
+        # 5. Limpieza final de punto y coma final, comillas simples o backticks sobrantes
+        cleaned = cleaned.rstrip(";` \t\r\n")
 
         print("=" * 80)
         print("SQL DESPUÉS DE LIMPIEZA")

@@ -76,13 +76,17 @@ class AdminAssistantUseCase:
             context,
         )
 
+        is_greeting_sql = "SELECT 'greeting'" in planned.sql
+        final_sql = None if is_greeting_sql else planned.sql
+        final_execution_ms = None if is_greeting_sql else query_result.execution_ms
+
         now = datetime.now(timezone.utc)
         interaction = AIInteraction(
             interaction_id=str(uuid.uuid4()),
             user_id=user_id,
             question=question,
-            generated_sql=planned.sql,
-            execution_ms=query_result.execution_ms,
+            generated_sql=final_sql,
+            execution_ms=final_execution_ms,
             response=answer,
             provider=self._provider,
             created_at=now,
@@ -95,8 +99,8 @@ class AdminAssistantUseCase:
 
         return AskResult(
             answer=answer,
-            generated_sql=planned.sql,
-            execution_ms=query_result.execution_ms,
+            generated_sql=final_sql,
+            execution_ms=final_execution_ms,
             provider=self._provider,
             model=self._model,
             interaction_id=interaction.interaction_id,

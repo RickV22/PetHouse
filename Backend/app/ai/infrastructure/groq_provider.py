@@ -55,6 +55,8 @@ class GroqProvider(AIProvider):
         except GroqConnectionError as e:
             raise AIProviderConnectionError(str(e)) from e
         except GroqStatusError as e:
+            if e.status_code in (413, 429) or "rate_limit" in str(e).lower() or "tokens" in str(e).lower():
+                raise AIProviderRateLimitError(str(e)) from e
             if e.status_code == 401:
                 raise AIProviderAuthError(str(e)) from e
             raise AIProviderError(str(e)) from e

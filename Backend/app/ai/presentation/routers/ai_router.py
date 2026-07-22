@@ -5,6 +5,7 @@ from app.ai.domain.exceptions import SQLValidationError
 from app.ai.infrastructure.exceptions import (
     AIProviderAuthError,
     AIProviderConnectionError,
+    AIProviderError,
     AIProviderRateLimitError,
     AIProviderTimeoutError,
     MCPConnectionError,
@@ -68,7 +69,7 @@ async def ask(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=f"AI provider authentication failed: {e}",
         )
-    except (AIProviderRateLimitError, AIProviderConnectionError) as e:
+    except (AIProviderRateLimitError, AIProviderConnectionError, AIProviderError) as e:
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail=str(e),
