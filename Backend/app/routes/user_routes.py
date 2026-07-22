@@ -60,12 +60,14 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
 
 
 # CREATE (Admin only)
+@router.post("", response_model=UserResponse)
 @router.post("/", response_model=UserResponse)
 def create(user: UserCreate, db: Session = Depends(get_db), current_admin = Depends(get_current_admin_user)):
     return create_user(db, user)
 
 
 # GET ALL
+@router.get("", response_model=List[UserResponse])
 @router.get("/", response_model=List[UserResponse])
 def read_all(db: Session = Depends(get_db)):
     return get_users(db)

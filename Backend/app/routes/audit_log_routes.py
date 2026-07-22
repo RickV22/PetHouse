@@ -17,6 +17,7 @@ from app.auth.dependencies import get_current_admin_user
 router = APIRouter(prefix="/audit-logs", tags=["Audit Logs"])
 
 
+@router.get("", response_model=List[AuditLogResponse])
 @router.get("/", response_model=List[AuditLogResponse])
 def read_audit_logs(
     user_id: Optional[int] = Query(None),

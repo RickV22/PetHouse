@@ -53,6 +53,7 @@ def _upload_file_to_data_uri(file: UploadFile):
     
 
 
+@router.post("", response_model=AdoptionCreateResponse)
 @router.post("/", response_model=AdoptionCreateResponse)
 def create(
     background_tasks: BackgroundTasks,
@@ -85,6 +86,7 @@ def create(
     return adoption
 
 
+@router.get("", response_model=List[AdoptionListResponse])
 @router.get("/", response_model=List[AdoptionListResponse])
 def read_all(db: Session = Depends(get_db)):
     return get_adoptions(db)

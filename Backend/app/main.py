@@ -25,7 +25,7 @@ from app.routes.audit_log_routes import router as audit_log_router
 from app.routes.pet_health_routes import router as pet_health_router
 from app.ai.presentation.routers.ai_router import router as ai_router
 
-app = FastAPI()
+app = FastAPI(redirect_slashes=False)
 
 DEFAULT_CORS_ORIGINS = [
     "http://localhost:4200",
