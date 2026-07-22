@@ -43,6 +43,7 @@ DEFAULT_CORS_ORIGINS = [
     "https://pet-house-git-main-rickv22s-projects.vercel.app",
     "https://pet-house-taupe.vercel.app",
     "http://127.0.0.1:8000",
+    "http://3.17.182.157:8000",
 ]
 ENV_CORS_ORIGINS = [
     origin.strip()
