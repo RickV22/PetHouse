@@ -15,6 +15,9 @@ services:
     env_file:
       - .env
 
+    environment:
+      - DATABASE_URL=postgresql://neondb_owner:npg_ReiUD27Fftnw@ep-damp-block-ai81i5p8-pooler.c-4.us-east-1.aws.neon.tech:5432/neondb?sslmode=require&channel_binding=require
+
     depends_on:
       postgres:
         condition: service_healthy
@@ -104,6 +107,7 @@ services:
 
     environment:
       - OLLAMA_HOST=http://ollama:11434
+      - DATABASE_URL=postgresql://neondb_owner:npg_ReiUD27Fftnw@ep-damp-block-ai81i5p8-pooler.c-4.us-east-1.aws.neon.tech:5432/neondb?sslmode=require&channel_binding=require
 
     depends_on:
       - ollama
